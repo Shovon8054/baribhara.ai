@@ -3,15 +3,28 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import compression from 'compression';
+import routes from "./routes";
 
 const app = express();
 
-app.use(cors());
+
 app.use(helmet());
 app.use(compression());
 app.use(morgan('dev'));
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+
+
+app.use(express.json());
+
+app.use('/api', routes);
+
 
 app.get('/health', (_req: Request, res: Response) => {
   res.status(200).json({ status: 'ok', service: 'baribhara-api' });
