@@ -1,0 +1,12 @@
+{
+  "name": "baribhara-ai",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "scripts": {
+    "install:frontend": "npm --workspace frontend install",
+    "install:backend": "npm --workspace backend install"
+  }
+}
