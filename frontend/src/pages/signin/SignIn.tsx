@@ -19,17 +19,6 @@ const SignIn = () => {
 
         console.log(result);
 
-        localStorage.setItem(
-        "accessToken",
-        result.data.accessToken
-        );
-
-  
-        localStorage.setItem(
-        "user",
-        JSON.stringify(result.data.user)
-        );
-
         alert(result.message);
 
         setEmail("");

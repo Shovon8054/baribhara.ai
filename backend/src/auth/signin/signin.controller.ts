@@ -7,10 +7,19 @@ export async function login(req: Request, res: Response) {
 
     const result = await signInService.login(email, password);
 
+    res.cookie("auth_token", result.accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 24 * 60 * 60 * 1000,
+    });
+
     res.status(200).json({
       success: true,
       message: "Login successful",
-      data: result,
+      data: {
+        user: result.user,
+      },
     });
   } catch (error) {
     const message =
@@ -21,4 +30,17 @@ export async function login(req: Request, res: Response) {
       message,
     });
   }
+}
+
+export async function logout(req: Request, res: Response) {
+  res.clearCookie("auth_token", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+  });
+
+  res.status(200).json({
+    success: true,
+    message: "Logged out successfully",
+  });
 }
