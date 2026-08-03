@@ -7,12 +7,13 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8083',
+        // The API server listens on PORT (8081 in the local environment).
+        target: 'http://localhost:8081',
         changeOrigin: true,
         secure: false,
       },
       '/uploads': {
-        target: 'http://localhost:8083',
+        target: 'http://localhost:8081',
         changeOrigin: true,
         secure: false,
       },

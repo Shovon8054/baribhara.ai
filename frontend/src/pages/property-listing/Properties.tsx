@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getAllProperties } from "../../services/property.service";
 
 interface Property {
@@ -22,6 +23,7 @@ interface Property {
 }
 
 const Properties = () => {
+  const navigate = useNavigate();
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -49,10 +51,8 @@ const Properties = () => {
     if (image.startsWith("http://") || image.startsWith("https://") || image.startsWith("data:")) {
       return image;
     }
-    if (image.startsWith("/")) {
-      return `http://localhost:8083${image}`;
-    }
-    return `http://localhost:8083/uploads/properties/${image}`;
+    // Keep uploads on the current origin so Vite can proxy them in development.
+    return image.startsWith("/") ? image : `/uploads/properties/${image}`;
   };
 
   return (

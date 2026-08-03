@@ -31,6 +31,22 @@ app.use(
   express.static(path.join(__dirname, "uploads"))
 );
 
+// Older seeded properties reference images that may not exist on disk.
+// Serve a lightweight placeholder instead of returning a broken image/404.
+app.get("/uploads/properties/:filename", (_req: Request, res: Response) => {
+  res
+    .status(200)
+    .type("image/svg+xml")
+    .send(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-label="Property image unavailable">
+        <rect width="800" height="560" fill="#e2e8f0"/>
+        <path d="M170 400l135-145 92 94 72-76 161 127H170z" fill="#94a3b8"/>
+        <circle cx="290" cy="165" r="46" fill="#f8fafc"/>
+        <text x="400" y="485" text-anchor="middle" fill="#475569" font-family="Arial, sans-serif" font-size="30">Property image unavailable</text>
+      </svg>
+    `);
+});
+
 app.use(express.json());
 
 app.use('/api', routes);
