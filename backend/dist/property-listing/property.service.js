@@ -112,5 +112,22 @@ class PropertyService {
   `);
         return result.rows;
     }
+    async deleteProperty(propertyId, ownerId) {
+        // Check ownership
+        const property = await dbConnection_1.default.query(`
+    SELECT images
+    FROM properties
+    WHERE id = $1
+    AND owner_id = $2
+    `, [propertyId, ownerId]);
+        if (property.rows.length === 0) {
+            throw new Error("Property not found or unauthorized");
+        }
+        await dbConnection_1.default.query(`
+    DELETE FROM properties
+    WHERE id = $1
+    `, [propertyId]);
+        return property.rows[0];
+    }
 }
 exports.default = new PropertyService();

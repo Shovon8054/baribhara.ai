@@ -14,3 +14,8 @@ export const getAllProperties = async () => {
   const response = await api.get("/property");
   return response.data.data;
 };
+
+export const deleteProperty = async (propertyId: string) => {
+  const response = await api.delete(`/property/${propertyId}`);
+  return response.data;
+};

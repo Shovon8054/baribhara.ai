@@ -79,7 +79,7 @@ const TenantNavbar = () => {
             Favorites
           </Link>
           <Link
-            to="#"
+            to="/profile"
             className="px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all duration-300"
           >
             Profile
@@ -154,7 +154,7 @@ const TenantNavbar = () => {
               Favorites
             </Link>
             <Link
-              to="#"
+              to="/profile"
               className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all duration-300"
               onClick={() => setIsMobileMenuOpen(false)}
             >

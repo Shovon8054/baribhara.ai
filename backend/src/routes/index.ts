@@ -4,6 +4,7 @@ import signinRoutes from "../auth/signin/signin.routes";
 import propertyRoutes from "../property-listing/property.routes";
 import requireAuth from "../middleware/authMiddleware";
 import propertyController from "../property-listing/property.controller";
+import profileRoutes from "../profile/profile.routes";
 
 
 
@@ -20,8 +21,9 @@ router.use(requireAuth);
 
 router.use("/property", propertyRoutes);
 router.get("/", propertyController.getAllProperties);
+router.use("/profile", profileRoutes);
 
-console.log("Main routes loaded");
+// console.log("Main routes loaded");
 
 
 

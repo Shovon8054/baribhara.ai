@@ -66,6 +66,12 @@ router.get(
   propertyController.getAllProperties
 );
 
+
+router.delete(
+  "/:id",
+  requireAuth,
+  propertyController.deleteProperty
+);
 // router.get("/test", (req, res) => {
 //   res.json({
 //     success: true,

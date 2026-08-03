@@ -4,6 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const property_service_1 = __importDefault(require("./property.service"));
+const fs_1 = __importDefault(require("fs"));
+const path_1 = __importDefault(require("path"));
 const propertyController = {
     async createProperty(req, res) {
         try {
@@ -87,5 +89,33 @@ const propertyController = {
             });
         }
     },
+    async deleteProperty(req, res) {
+        try {
+            const propertyId = req.params.id;
+            if (!propertyId || Array.isArray(propertyId)) {
+                return res.status(400).json({ success: false, message: "A valid property ID is required" });
+            }
+            const ownerId = req.user.id;
+            const property = await property_service_1.default.deleteProperty(propertyId, ownerId);
+            // Delete images from uploads folder
+            for (const image of property.images) {
+                const imagePath = path_1.default.join(__dirname, "../uploads/properties", path_1.default.basename(image));
+                if (fs_1.default.existsSync(imagePath)) {
+                    fs_1.default.unlinkSync(imagePath);
+                }
+            }
+            res.status(200).json({
+                success: true,
+                message: "Property deleted successfully",
+            });
+        }
+        catch (error) {
+            const message = error instanceof Error ? error.message : "Something went wrong";
+            res.status(400).json({
+                success: false,
+                message,
+            });
+        }
+    }
 };
 exports.default = propertyController;

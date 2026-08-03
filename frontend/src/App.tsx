@@ -10,6 +10,7 @@ import TenantNavbar from './navbar';
 import { useLocation } from 'react-router-dom';
 
 import CreateProperty from './pages/property-listing/CreateProperty';
+import Profile from './pages/profile/Profile';
 
 const App = () => {
   const location = useLocation();
@@ -55,6 +56,7 @@ const App = () => {
           <Route path="/create-property" element={<CreateProperty />} />
           <Route path="/properties" element={<Properties />} />
           <Route path="/browse-properties" element={<Properties />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </div>
     </>

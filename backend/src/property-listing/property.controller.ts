@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import propertyService from "./property.service";
+import fs from "fs";
+import path from "path";
 
 const propertyController = {
   async createProperty(req: Request, res: Response) {
@@ -116,6 +118,47 @@ const propertyController = {
     });
   }
 },
+  async deleteProperty(req: Request, res: Response) {
+  try {
+    const propertyId = req.params.id;
+    if (!propertyId || Array.isArray(propertyId)) {
+      return res.status(400).json({ success: false, message: "A valid property ID is required" });
+    }
+
+    const ownerId = (req as any).user.id;
+
+    const property = await propertyService.deleteProperty(
+      propertyId,
+      ownerId
+    );
+
+    // Delete images from uploads folder
+    for (const image of property.images) {
+      const imagePath = path.join(
+        __dirname,
+        "../uploads/properties",
+        path.basename(image)
+      );
+
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+      }
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Property deleted successfully",
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Something went wrong";
+
+    res.status(400).json({
+      success: false,
+      message,
+    });
+  }
+}
 };
 
 export default propertyController;
