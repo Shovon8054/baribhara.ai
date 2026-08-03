@@ -1,0 +1,206 @@
+import { useEffect, useState } from "react";
+import { getAllProperties } from "../../services/property.service";
+
+interface Property {
+  id: string;
+  title: string;
+  description: string;
+  price: string;
+  bedrooms: number;
+  bathrooms: number;
+  area: string;
+  location: string;
+  property_type: string;
+  furnished: boolean;
+  parking: boolean;
+  lift: boolean;
+  pet_friendly: boolean;
+  availability: boolean;
+  amenities: string[];
+  nearby_facilities: string[];
+  images: string[];
+}
+
+const Properties = () => {
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProperties();
+  }, []);
+
+  const fetchProperties = async () => {
+    try {
+      const properties = await getAllProperties();
+      setProperties(properties);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <h2 className="text-center mt-10">Loading...</h2>;
+  }
+
+  const getImageSrc = (image?: string) => {
+    if (!image) return "";
+    if (image.startsWith("http://") || image.startsWith("https://") || image.startsWith("data:")) {
+      return image;
+    }
+    if (image.startsWith("/")) {
+      return `http://localhost:8083${image}`;
+    }
+    return `http://localhost:8083/uploads/properties/${image}`;
+  };
+
+  return (
+<div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+    
+    {/* Header */}
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center">
+                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+            </div>
+            <div>
+                <h1 className="text-2xl sm:text-3xl font-semibold text-slate-900 tracking-tight">
+                    All Properties
+                </h1>
+                <p className="text-sm text-slate-500 mt-0.5">
+                    {properties.length} {properties.length === 1 ? 'property' : 'properties'} available
+                </p>
+            </div>
+        </div>
+    </div>
+
+    {/* Properties Grid */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+        {properties.map((property) => (
+            <div
+                key={property.id}
+                className="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group"
+            >
+                {/* Image */}
+                <div className="relative overflow-hidden h-56 sm:h-64">
+                    <img
+                        src={getImageSrc(property.images[0])}
+                        alt={property.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    {/* Price Badge */}
+                    <div className="absolute top-3 right-3 bg-blue-600 text-white px-3 py-1 rounded-lg text-sm font-semibold shadow-lg">
+                        ৳ {property.price.toLocaleString()}
+                    </div>
+                    {/* Property Type Badge */}
+                    {property.property_type && (
+                        <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-slate-700 px-3 py-1 rounded-lg text-xs font-medium shadow-lg">
+                            {property.property_type}
+                        </div>
+                    )}
+                </div>
+
+                {/* Content */}
+                <div className="p-5 sm:p-6">
+                    <h2 className="text-lg sm:text-xl font-semibold text-slate-900 tracking-tight line-clamp-1">
+                        {property.title}
+                    </h2>
+
+                    <div className="flex items-center gap-1.5 mt-1.5">
+                        <svg className="w-4 h-4 text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        <p className="text-sm text-slate-600 truncate">
+                            {property.location}
+                        </p>
+                    </div>
+
+                    <p className="mt-3 text-sm text-slate-600 line-clamp-2 leading-relaxed">
+                        {property.description}
+                    </p>
+
+                    {/* Features */}
+                    <div className="mt-4 flex items-center justify-between py-3 px-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <div className="flex items-center gap-1.5">
+                            <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                            <span className="text-sm font-medium text-slate-700">
+                                {property.bedrooms} {property.bedrooms === 1 ? 'Bed' : 'Beds'}
+                            </span>
+                        </div>
+                        <div className="w-px h-6 bg-slate-200"></div>
+                        <div className="flex items-center gap-1.5">
+                            <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <span className="text-sm font-medium text-slate-700">
+                                {property.bathrooms} {property.bathrooms === 1 ? 'Bath' : 'Baths'}
+                            </span>
+                        </div>
+                        <div className="w-px h-6 bg-slate-200"></div>
+                        <div className="flex items-center gap-1.5">
+                            <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
+                            </svg>
+                            <span className="text-sm font-medium text-slate-700">
+                                {property.area} sqft
+                            </span>
+                        </div>
+                    </div>
+
+                    {/* View Details Button */}
+                    <button 
+                        onClick={() => navigate(`/properties/${property.id}`)}
+                        className="
+                        w-full
+                        mt-5
+                        px-6 py-2.5
+                        bg-gradient-to-r from-blue-600 to-indigo-600
+                        text-white
+                        text-sm
+                        font-medium
+                        rounded-xl
+                        hover:from-blue-700 hover:to-indigo-700
+                        hover:shadow-md
+                        transition-all
+                        duration-200
+                        flex items-center justify-center gap-2
+                        group/btn
+                        "
+                    >
+                        <span>View Details</span>
+                        <svg className="w-4 h-4 transition-transform duration-200 group-hover/btn:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        ))}
+    </div>
+
+    {/* Empty State */}
+    {properties.length === 0 && (
+        <div className="text-center py-20 bg-white rounded-2xl border border-slate-200/80">
+            <div className="w-16 h-16 mx-auto rounded-full bg-slate-100 flex items-center justify-center mb-4">
+                <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-slate-700 mb-1">
+                No properties found
+            </h3>
+            <p className="text-sm text-slate-500">
+                Start by adding your first property
+            </p>
+        </div>
+    )}
+</div>
+  );
+};
+
+export default Properties;

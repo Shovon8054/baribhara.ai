@@ -3,6 +3,7 @@ import authRoutes from "../auth/signup/auth.routes";
 import signinRoutes from "../auth/signin/signin.routes";
 import propertyRoutes from "../property-listing/property.routes";
 import requireAuth from "../middleware/authMiddleware";
+import propertyController from "../property-listing/property.controller";
 
 
 
@@ -18,8 +19,9 @@ router.use("/auth", signinRoutes);
 router.use(requireAuth);
 
 router.use("/property", propertyRoutes);
+router.get("/", propertyController.getAllProperties);
 
-console.log("✅ Main routes loaded");
+console.log("Main routes loaded");
 
 
 

@@ -156,7 +156,7 @@ const CreateProperty = () => {
                         name="description"
                         placeholder="Describe your property in detail..."
                         onChange={handleChange}
-                        rows="4"
+                        rows={4}
                         required
                         className="
                         w-full

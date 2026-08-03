@@ -5,6 +5,7 @@ import propertyController from "./property.controller";
 import requireAuth from "../middleware/authMiddleware";
 
 
+
 const router = Router();
 
 // Storage
@@ -60,12 +61,16 @@ router.post(
   propertyController.createProperty
 );
 
+router.get(
+  "/",
+  propertyController.getAllProperties
+);
 
-router.get("/test", (req, res) => {
-  res.json({
-    success: true,
-    message: "Property route is working",
-  });
-});
+// router.get("/test", (req, res) => {
+//   res.json({
+//     success: true,
+//     message: "Property route is working",
+//   });
+// });
 
 export default router;

@@ -53,7 +53,7 @@ const TenantNavbar = () => {
           to="/create-property"
           className="text-sm font-medium text-slate-200 transition hover:text-cyan-400"
         >
-          Sell Property
+          Properties
         </Link>
 
         {!isAuth && (

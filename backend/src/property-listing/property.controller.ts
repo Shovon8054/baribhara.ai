@@ -97,6 +97,25 @@ const propertyController = {
       });
     }
   },
+  async getAllProperties(req: Request, res: Response) {
+  try {
+    const properties = await propertyService.getAllProperties();
+
+    res.status(200).json({
+      success: true,
+      count: properties.length,
+      data: properties,
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Something went wrong";
+
+    res.status(500).json({
+      success: false,
+      message,
+    });
+  }
+},
 };
 
 export default propertyController;

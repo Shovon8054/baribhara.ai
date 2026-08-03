@@ -8,4 +8,9 @@ const api = axios.create({
   withCredentials: true,
 });
 
+export const getAllProperties = async () => {
+  const response = await api.get("/property");
+  return response.data;
+};
+
 export default api;

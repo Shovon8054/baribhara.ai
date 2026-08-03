@@ -119,6 +119,37 @@ class PropertyService {
     );
 
     return result.rows[0];
+  };
+  async getAllProperties() {
+  const result = await pool.query(`
+    SELECT
+      id,
+      title,
+      description,
+      price,
+      bedrooms,
+      bathrooms,
+      area,
+      location,
+      property_type,
+      furnished,
+      family_bachelor,
+      parking,
+      lift,
+      pet_friendly,
+      availability,
+      amenities,
+      nearby_facilities,
+      images,
+      views,
+      favorites_count,
+      owner_id,
+      created_at
+    FROM properties
+    ORDER BY created_at DESC
+  `);
+
+    return result.rows;
   }
 }
 

@@ -9,3 +9,8 @@ export const createProperty = async (formData: FormData) => {
 
   return response.data;
 };
+
+export const getAllProperties = async () => {
+  const response = await api.get("/property");
+  return response.data.data;
+};
