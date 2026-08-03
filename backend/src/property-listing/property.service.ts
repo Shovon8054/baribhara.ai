@@ -37,6 +37,11 @@ interface CreateProperty {
 
 class PropertyService {
   async createProperty(property: CreateProperty) {
+  const client = await pool.connect();
+
+  try {
+    await client.query("BEGIN");
+
     const {
       title,
       description,
@@ -60,7 +65,7 @@ class PropertyService {
       owner_id,
     } = property;
 
-    const result = await pool.query(
+    const result = await client.query(
       `
       INSERT INTO properties
       (
@@ -85,13 +90,11 @@ class PropertyService {
         images,
         owner_id
       )
-
       VALUES
       (
         $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,
         $11,$12,$13,$14,$15,$16,$17,$18,$19,$20
       )
-
       RETURNING *;
       `,
       [
@@ -118,8 +121,29 @@ class PropertyService {
       ]
     );
 
+    // Roles are stored as uppercase values (TENANT, OWNER, ADMIN).
+    // Promote only a tenant; never overwrite an administrator role.
+    await client.query(
+      `
+      UPDATE users
+      SET role = 'OWNER'
+      WHERE id = $1
+      AND role = 'TENANT'
+      RETURNING id, role
+      `,
+      [owner_id]
+    );
+
+    await client.query("COMMIT");
+
     return result.rows[0];
-  };
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+}
   async getAllProperties() {
   const result = await pool.query(`
     SELECT

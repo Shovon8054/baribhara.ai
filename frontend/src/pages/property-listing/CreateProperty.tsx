@@ -1,7 +1,11 @@
 import { useState } from "react";
 import { createProperty } from "../../services/property.service";
+import { useNavigate } from "react-router-dom";
+
 
 const CreateProperty = () => {
+      const navigate = useNavigate();
+
   const [property, setProperty] = useState({
     title: "",
     description: "",
@@ -81,7 +85,8 @@ const CreateProperty = () => {
 
         console.log(data);
 
-        alert("Property created successfully!");
+        // alert("Property created successfully!");
+        navigate("/properties");
 
     } catch (error: any) {
         console.log(error);
@@ -98,94 +103,115 @@ const CreateProperty = () => {
   return (
 <form
     onSubmit={handleSubmit}
-    className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-8"
+    className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-10"
 >
-    <div className="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+    <div className="bg-slate-800/50 backdrop-blur-sm rounded-3xl shadow-xl border border-slate-700/50 overflow-hidden">
 
         {/* Header */}
-        <div className="px-5 sm:px-6 py-4 border-b border-slate-200/60 bg-gradient-to-r from-slate-50/50 to-white">
-            <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
-                    <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div className="px-6 sm:px-8 py-5 sm:py-6 border-b border-slate-700/50 bg-gradient-to-r from-cyan-500 via-cyan-600 to-cyan-700">
+            <div className="flex items-center gap-4">
+                <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-lg">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                     </svg>
                 </div>
-                <h2 className="text-lg sm:text-xl font-semibold text-slate-800">
-                    Create New Property
-                </h2>
+                <div>
+                    <h2 className="text-xl sm:text-2xl font-semibold text-white tracking-tight">
+                        Create New Property
+                    </h2>
+                    <p className="text-sm text-cyan-100 mt-0.5">
+                        Fill in the details below to list your property
+                    </p>
+                </div>
             </div>
         </div>
 
         {/* Body */}
-        <div className="p-5 sm:p-6 space-y-5">
+        <div className="p-6 sm:p-8 space-y-6">
 
             {/* Basic Information */}
-            <div className="space-y-4">
+            <div className="space-y-5">
                 <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                        Property Title <span className="text-red-500">*</span>
+                    <label className="flex items-center gap-1.5 text-xs font-semibold text-cyan-400 uppercase tracking-wider">
+                        Property Title <span className="text-red-400">*</span>
                     </label>
-                    <input
-                        name="title"
-                        placeholder="Enter property title"
-                        onChange={handleChange}
-                        required
-                        className="
-                        w-full
-                        px-4 py-2.5
-                        bg-slate-50
-                        border border-slate-200
-                        rounded-lg
-                        text-sm text-slate-800
-                        placeholder:text-slate-400
-                        focus:outline-none
-                        focus:ring-2
-                        focus:ring-blue-500/20
-                        focus:border-blue-500
-                        transition-all
-                        duration-200
-                        "
-                    />
+                    <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                        </div>
+                        <input
+                            name="title"
+                            placeholder="Enter property title"
+                            onChange={handleChange}
+                            required
+                            className="
+                            w-full
+                            pl-9 pr-4 py-3
+                            bg-slate-900/50
+                            border-2 border-slate-700
+                            rounded-xl
+                            text-sm text-white
+                            placeholder:text-slate-500
+                            focus:outline-none
+                            focus:ring-4
+                            focus:ring-cyan-500/30
+                            focus:border-cyan-500
+                            transition-all
+                            duration-300
+                            hover:border-slate-600
+                            "
+                        />
+                    </div>
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                        Description <span className="text-red-500">*</span>
+                    <label className="flex items-center gap-1.5 text-xs font-semibold text-cyan-400 uppercase tracking-wider">
+                        Description <span className="text-red-400">*</span>
                     </label>
-                    <textarea
-                        name="description"
-                        placeholder="Describe your property in detail..."
-                        onChange={handleChange}
-                        rows={4}
-                        required
-                        className="
-                        w-full
-                        px-4 py-2.5
-                        bg-slate-50
-                        border border-slate-200
-                        rounded-lg
-                        text-sm text-slate-800
-                        placeholder:text-slate-400
-                        focus:outline-none
-                        focus:ring-2
-                        focus:ring-blue-500/20
-                        focus:border-blue-500
-                        transition-all
-                        duration-200
-                        resize-none
-                        "
-                    />
+                    <div className="relative">
+                        <div className="absolute top-3 left-3 pointer-events-none">
+                            <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 6h16M4 12h16M4 18h7" />
+                            </svg>
+                        </div>
+                        <textarea
+                            name="description"
+                            placeholder="Describe your property in detail..."
+                            onChange={handleChange}
+                            rows={4}
+                            required
+                            className="
+                            w-full
+                            pl-9 pr-4 py-3
+                            bg-slate-900/50
+                            border-2 border-slate-700
+                            rounded-xl
+                            text-sm text-white
+                            placeholder:text-slate-500
+                            focus:outline-none
+                            focus:ring-4
+                            focus:ring-cyan-500/30
+                            focus:border-cyan-500
+                            transition-all
+                            duration-300
+                            resize-none
+                            hover:border-slate-600
+                            "
+                        />
+                    </div>
                 </div>
             </div>
 
             {/* Property Details Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                        Price <span className="text-red-500">*</span>
+                    <label className="flex items-center gap-1.5 text-xs font-semibold text-cyan-400 uppercase tracking-wider">
+                        Price <span className="text-red-400">*</span>
                     </label>
                     <div className="relative">
-                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-medium text-sm">$</span>
+                        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-cyan-400 font-semibold text-sm">$</span>
                         <input
                             name="price"
                             type="number"
@@ -194,256 +220,322 @@ const CreateProperty = () => {
                             required
                             className="
                             w-full
-                            pl-7 pr-4 py-2.5
-                            bg-slate-50
-                            border border-slate-200
-                            rounded-lg
-                            text-sm text-slate-800
-                            placeholder:text-slate-400
+                            pl-8 pr-4 py-3
+                            bg-slate-900/50
+                            border-2 border-slate-700
+                            rounded-xl
+                            text-sm text-white
+                            placeholder:text-slate-500
                             focus:outline-none
-                            focus:ring-2
-                            focus:ring-blue-500/20
-                            focus:border-blue-500
+                            focus:ring-4
+                            focus:ring-cyan-500/30
+                            focus:border-cyan-500
                             transition-all
-                            duration-200
+                            duration-300
+                            hover:border-slate-600
                             "
                         />
                     </div>
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                        Area (sq ft) <span className="text-red-500">*</span>
+                    <label className="flex items-center gap-1.5 text-xs font-semibold text-cyan-400 uppercase tracking-wider">
+                        Area (sq ft) <span className="text-red-400">*</span>
                     </label>
-                    <input
-                        name="area"
-                        type="number"
-                        placeholder="0"
-                        onChange={handleChange}
-                        required
-                        className="
-                        w-full
-                        px-4 py-2.5
-                        bg-slate-50
-                        border border-slate-200
-                        rounded-lg
-                        text-sm text-slate-800
-                        placeholder:text-slate-400
-                        focus:outline-none
-                        focus:ring-2
-                        focus:ring-blue-500/20
-                        focus:border-blue-500
-                        transition-all
-                        duration-200
-                        "
-                    />
+                    <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
+                            </svg>
+                        </div>
+                        <input
+                            name="area"
+                            type="number"
+                            placeholder="0"
+                            onChange={handleChange}
+                            required
+                            className="
+                            w-full
+                            pl-9 pr-4 py-3
+                            bg-slate-900/50
+                            border-2 border-slate-700
+                            rounded-xl
+                            text-sm text-white
+                            placeholder:text-slate-500
+                            focus:outline-none
+                            focus:ring-4
+                            focus:ring-cyan-500/30
+                            focus:border-cyan-500
+                            transition-all
+                            duration-300
+                            hover:border-slate-600
+                            "
+                        />
+                    </div>
                 </div>
             </div>
 
             {/* Location (full width) */}
             <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    Location <span className="text-red-500">*</span>
+                <label className="flex items-center gap-1.5 text-xs font-semibold text-cyan-400 uppercase tracking-wider">
+                    Location <span className="text-red-400">*</span>
                 </label>
-                <input
-                    name="location"
-                    placeholder="Enter location"
-                    onChange={handleChange}
-                    required
-                    className="
-                    w-full
-                    px-4 py-2.5
-                    bg-slate-50
-                    border border-slate-200
-                    rounded-lg
-                    text-sm text-slate-800
-                    placeholder:text-slate-400
-                    focus:outline-none
-                    focus:ring-2
-                    focus:ring-blue-500/20
-                    focus:border-blue-500
-                    transition-all
-                    duration-200
-                    "
-                />
+                <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                    </div>
+                    <input
+                        name="location"
+                        placeholder="Enter location"
+                        onChange={handleChange}
+                        required
+                        className="
+                        w-full
+                        pl-9 pr-4 py-3
+                        bg-slate-900/50
+                        border-2 border-slate-700
+                        rounded-xl
+                        text-sm text-white
+                        placeholder:text-slate-500
+                        focus:outline-none
+                        focus:ring-4
+                        focus:ring-cyan-500/30
+                        focus:border-cyan-500
+                        transition-all
+                        duration-300
+                        hover:border-slate-600
+                        "
+                    />
+                </div>
             </div>
-            
 
             {/* Bedrooms & Bathrooms */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                    <label className="flex items-center gap-1.5 text-xs font-semibold text-cyan-400 uppercase tracking-wider">
                         Bedrooms
                     </label>
-                    <input
-                        name="bedrooms"
-                        type="number"
-                        placeholder="0"
-                        onChange={handleChange}
-                        required
-                        className="
-                        w-full
-                        px-4 py-2.5
-                        bg-slate-50
-                        border border-slate-200
-                        rounded-lg
-                        text-sm text-slate-800
-                        placeholder:text-slate-400
-                        focus:outline-none
-                        focus:ring-2
-                        focus:ring-blue-500/20
-                        focus:border-blue-500
-                        transition-all
-                        duration-200
-                        "
-                    />
+                    <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                            </svg>
+                        </div>
+                        <input
+                            name="bedrooms"
+                            type="number"
+                            placeholder="0"
+                            onChange={handleChange}
+                            required
+                            className="
+                            w-full
+                            pl-9 pr-4 py-3
+                            bg-slate-900/50
+                            border-2 border-slate-700
+                            rounded-xl
+                            text-sm text-white
+                            placeholder:text-slate-500
+                            focus:outline-none
+                            focus:ring-4
+                            focus:ring-cyan-500/30
+                            focus:border-cyan-500
+                            transition-all
+                            duration-300
+                            hover:border-slate-600
+                            "
+                        />
+                    </div>
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                    <label className="flex items-center gap-1.5 text-xs font-semibold text-cyan-400 uppercase tracking-wider">
                         Bathrooms
                     </label>
-                    <input
-                        name="bathrooms"
-                        type="number"
-                        placeholder="0"
-                        onChange={handleChange}
-                        required
-                        className="
-                        w-full
-                        px-4 py-2.5
-                        bg-slate-50
-                        border border-slate-200
-                        rounded-lg
-                        text-sm text-slate-800
-                        placeholder:text-slate-400
-                        focus:outline-none
-                        focus:ring-2
-                        focus:ring-blue-500/20
-                        focus:border-blue-500
-                        transition-all
-                        duration-200
-                        "
-                    />
+                    <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <input
+                            name="bathrooms"
+                            type="number"
+                            placeholder="0"
+                            onChange={handleChange}
+                            required
+                            className="
+                            w-full
+                            pl-9 pr-4 py-3
+                            bg-slate-900/50
+                            border-2 border-slate-700
+                            rounded-xl
+                            text-sm text-white
+                            placeholder:text-slate-500
+                            focus:outline-none
+                            focus:ring-4
+                            focus:ring-cyan-500/30
+                            focus:border-cyan-500
+                            transition-all
+                            duration-300
+                            hover:border-slate-600
+                            "
+                        />
+                    </div>
                 </div>
             </div>
 
             {/* Property Type */}
             <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">
-                    Property Type <span className="text-red-500">*</span>
+                <label className="flex items-center gap-1.5 text-xs font-semibold text-cyan-400 uppercase tracking-wider">
+                    Property Type <span className="text-red-400">*</span>
                 </label>
-                <select
-                    name="property_type"
-                    onChange={handleChange}
-                    className="
-                    w-full
-                    px-4 py-2.5
-                    bg-slate-50
-                    border border-slate-200
-                    rounded-lg
-                    text-sm text-slate-800
-                    focus:outline-none
-                    focus:ring-2
-                    focus:ring-blue-500/20
-                    focus:border-blue-500
-                    transition-all
-                    duration-200
-                    cursor-pointer
-                    "
-                >
-                    <option value="APARTMENT">Apartment</option>
-                    <option value="HOUSE">House</option>
-                    <option value="FLAT">Flat</option>
-                    <option value="STUDIO">Studio</option>
-                    <option value="PENTHOUSE">Penthouse</option>
-                    <option value="DUPLEX">Duplex</option>
-                </select>
+                <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                    </div>
+                    <select
+                        name="property_type"
+                        onChange={handleChange}
+                        className="
+                        w-full
+                        pl-9 pr-4 py-3
+                        bg-slate-900/50
+                        border-2 border-slate-700
+                        rounded-xl
+                        text-sm text-white
+                        appearance-none
+                        focus:outline-none
+                        focus:ring-4
+                        focus:ring-cyan-500/30
+                        focus:border-cyan-500
+                        transition-all
+                        duration-300
+                        cursor-pointer
+                        hover:border-slate-600
+                        "
+                    >
+                        <option value="APARTMENT" className="bg-slate-900">🏢 Apartment</option>
+                        <option value="HOUSE" className="bg-slate-900">🏠 House</option>
+                        <option value="FLAT" className="bg-slate-900">🏢 Flat</option>
+                        <option value="STUDIO" className="bg-slate-900">🏢 Studio</option>
+                        <option value="PENTHOUSE" className="bg-slate-900">🏢 Penthouse</option>
+                        <option value="DUPLEX" className="bg-slate-900">🏢 Duplex</option>
+                    </select>
+                    <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                        <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </div>
             </div>
 
             {/* Amenities & Nearby Facilities */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                    <label className="flex items-center gap-1.5 text-xs font-semibold text-cyan-400 uppercase tracking-wider">
                         Amenities
                     </label>
-                    <input
-                        name="amenities"
-                        placeholder="WiFi, AC, Generator"
-                        onChange={handleChange}
-                        className="
-                        w-full
-                        px-4 py-2.5
-                        bg-slate-50
-                        border border-slate-200
-                        rounded-lg
-                        text-sm text-slate-800
-                        placeholder:text-slate-400
-                        focus:outline-none
-                        focus:ring-2
-                        focus:ring-blue-500/20
-                        focus:border-blue-500
-                        transition-all
-                        duration-200
-                        "
-                    />
+                    <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                            </svg>
+                        </div>
+                        <input
+                            name="amenities"
+                            placeholder="WiFi, AC, Generator"
+                            onChange={handleChange}
+                            className="
+                            w-full
+                            pl-9 pr-4 py-3
+                            bg-slate-900/50
+                            border-2 border-slate-700
+                            rounded-xl
+                            text-sm text-white
+                            placeholder:text-slate-500
+                            focus:outline-none
+                            focus:ring-4
+                            focus:ring-cyan-500/30
+                            focus:border-cyan-500
+                            transition-all
+                            duration-300
+                            hover:border-slate-600
+                            "
+                        />
+                    </div>
                 </div>
 
                 <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                    <label className="flex items-center gap-1.5 text-xs font-semibold text-cyan-400 uppercase tracking-wider">
                         Nearby Facilities
                     </label>
-                    <input
-                        name="nearby_facilities"
-                        placeholder="School, Hospital, Market"
-                        onChange={handleChange}
-                        className="
-                        w-full
-                        px-4 py-2.5
-                        bg-slate-50
-                        border border-slate-200
-                        rounded-lg
-                        text-sm text-slate-800
-                        placeholder:text-slate-400
-                        focus:outline-none
-                        focus:ring-2
-                        focus:ring-blue-500/20
-                        focus:border-blue-500
-                        transition-all
-                        duration-200
-                        "
-                    />
+                    <div className="relative">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </div>
+                        <input
+                            name="nearby_facilities"
+                            placeholder="School, Hospital, Market"
+                            onChange={handleChange}
+                            className="
+                            w-full
+                            pl-9 pr-4 py-3
+                            bg-slate-900/50
+                            border-2 border-slate-700
+                            rounded-xl
+                            text-sm text-white
+                            placeholder:text-slate-500
+                            focus:outline-none
+                            focus:ring-4
+                            focus:ring-cyan-500/30
+                            focus:border-cyan-500
+                            transition-all
+                            duration-300
+                            hover:border-slate-600
+                            "
+                        />
+                    </div>
                 </div>
             </div>
 
             {/* Image Upload */}
             <div className="space-y-1.5">
-                <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                <label className="flex items-center gap-1.5 text-xs font-semibold text-cyan-400 uppercase tracking-wider">
                     Property Images
                 </label>
                 <div className="flex items-center justify-center w-full">
                     <label className="
                     flex flex-col items-center justify-center
                     w-full
-                    h-32
-                    border-2 border-dashed border-slate-200
-                    rounded-lg
+                    h-40
+                    border-2 border-dashed border-slate-700
+                    rounded-xl
                     cursor-pointer
-                    bg-slate-50
-                    hover:bg-slate-100
-                    hover:border-blue-400
+                    bg-slate-900/30
+                    hover:bg-slate-900/50
+                    hover:border-cyan-500/50
                     transition-all
-                    duration-200
+                    duration-300
                     group
                     ">
                         <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                            <svg className="w-8 h-8 mb-3 text-slate-400 group-hover:text-blue-500 transition-colors duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                            </svg>
-                            <p className="text-sm text-slate-500 group-hover:text-slate-700 transition-colors duration-200">
-                                <span className="font-semibold">Click to upload</span> or drag and drop
+                            <div className="w-14 h-14 rounded-full bg-cyan-500/10 group-hover:bg-cyan-500/20 transition-colors duration-300 flex items-center justify-center mb-3">
+                                <svg className="w-7 h-7 text-cyan-400 group-hover:text-cyan-300 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                            </div>
+                            <p className="text-sm font-medium text-slate-400 group-hover:text-slate-300 transition-colors duration-300">
+                                <span className="text-cyan-400 font-semibold">Click to upload</span> or drag and drop
                             </p>
-                            <p className="text-xs text-slate-400 mt-1">
+                            <p className="text-xs text-slate-500 mt-1.5">
                                 PNG, JPG, JPEG (Max 5MB each)
                             </p>
                         </div>
@@ -462,23 +554,27 @@ const CreateProperty = () => {
                 type="submit"
                 className="
                 w-full
-                px-6 py-3
-                bg-gradient-to-r from-blue-600 to-indigo-600
+                px-6 py-3.5
+                bg-gradient-to-r from-cyan-500 via-cyan-600 to-cyan-700
                 text-white
                 text-sm
-                font-medium
-                rounded-lg
-                hover:from-blue-700 hover:to-indigo-700
-                hover:shadow-md
+                font-semibold
+                rounded-xl
+                hover:from-cyan-600 hover:via-cyan-700 hover:to-cyan-800
+                hover:shadow-lg hover:shadow-cyan-500/25
                 transition-all
-                duration-200
-                flex items-center justify-center gap-2
+                duration-300
+                flex items-center justify-center gap-2.5
+                group
                 "
             >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                 </svg>
-                Create Property
+                <span>Create Property</span>
+                <svg className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
             </button>
 
         </div>
