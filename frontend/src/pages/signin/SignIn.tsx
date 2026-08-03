@@ -1,15 +1,48 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
+import { loginUser } from "../../services/auth.service";
+
 const SignIn = () => {
+    const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log({ email, password });
-  };
+    try {
+        const result = await loginUser({
+        email,
+        password,
+        });
+
+        console.log(result);
+
+        localStorage.setItem(
+        "accessToken",
+        result.data.accessToken
+        );
+
+  
+        localStorage.setItem(
+        "user",
+        JSON.stringify(result.data.user)
+        );
+
+        alert(result.message);
+
+        setEmail("");
+        setPassword("");
+
+        navigate("/");
+
+    } catch (error: any) {
+        alert(
+        error.response?.data?.message || "Login failed"
+        );
+    }
+    };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-4">
