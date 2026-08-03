@@ -33,7 +33,7 @@ const SignIn = () => {
 
       // Redirect after a short delay to show the toast
       setTimeout(() => {
-        navigate("/");
+        navigate("/home");
       }, 1000);
 
     } catch (error: any) {

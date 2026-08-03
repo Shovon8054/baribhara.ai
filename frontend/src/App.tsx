@@ -6,8 +6,13 @@ import SignIn from './pages/signin/SignIn';
 import SignUp from './pages/signin/SignUp';
 import DemoPage from './pages/DemoPage';
 import TenantNavbar from './navbar';
+import { useLocation } from 'react-router-dom';
+
+import CreateProperty from './pages/property-listing/CreateProperty';
 
 const App = () => {
+  const location = useLocation();
+  const hideNavbar = location.pathname === '/' || location.pathname === '/signin' || location.pathname === '/signup';
   return (
     <>
       {/* Toaster should be at the root level for proper positioning */}
@@ -39,13 +44,14 @@ const App = () => {
       />
       
       <div className="min-h-screen bg-slate-950 text-white">
-        <TenantNavbar />
+        {!hideNavbar && <TenantNavbar />}
 
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<SignIn />} />
+          <Route path="/home" element={<HomePage />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
-          <Route path="/demo" element={<DemoPage />} />
+          <Route path="/create-property" element={<CreateProperty />} />
         </Routes>
       </div>
     </>
