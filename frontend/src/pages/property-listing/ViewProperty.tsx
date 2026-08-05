@@ -101,13 +101,40 @@ const ViewProperty = () => {
 
     {/* Back Button */}
     <button
-      onClick={() => navigate(-1)}
-      className="group mb-6 flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors duration-200"
+    onClick={() => navigate(-1)}
+    className="
+    group 
+    mb-6 
+    flex items-center gap-2.5 
+    px-4 py-2.5 
+    bg-slate-800/50 
+    backdrop-blur-sm 
+    border border-slate-700/50 
+    rounded-xl 
+    text-sm font-medium 
+    text-slate-300 
+    hover:bg-slate-700/50 
+    hover:border-cyan-500/30 
+    hover:text-white 
+    hover:shadow-lg 
+    hover:shadow-cyan-500/5 
+    transition-all 
+    duration-300 
+    w-fit
+    "
     >
-      <svg className="w-4 h-4 transition-transform duration-200 group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg 
+        className="w-4 h-4 transition-transform duration-300 group-hover:-translate-x-1 group-hover:text-cyan-400" 
+        fill="none" 
+        stroke="currentColor" 
+        viewBox="0 0 24 24"
+    >
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-      </svg>
-      Back
+    </svg>
+    <span className="relative">
+        Back
+        <span className="absolute inset-x-0 -bottom-0.5 h-px bg-gradient-to-r from-cyan-400/0 via-cyan-400/0 to-cyan-400/0 group-hover:via-cyan-400/50 transition-all duration-300"></span>
+    </span>
     </button>
 
     {/* Main Image with Gallery */}
