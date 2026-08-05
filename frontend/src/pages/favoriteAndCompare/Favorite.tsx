@@ -1,296 +1,329 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { compareProperties } from "../../services/comparison.service";
+import { getFavorites, removeFavorite } from "../../services/favorite.service";
 
-import {
-  getFavorites,
-  removeFavorite,
-} from "../../services/favorite.service";
+interface FavoriteProperty {
+  id: string;
+  title: string;
+  price: number | string;
+  location: string;
+  bedrooms: number;
+  bathrooms: number;
+  area: number | string;
+  property_type?: string;
+  images: string[];
+  amenities?: string[];
+  nearby_facilities?: string[];
+}
+
+type SortOption = "recent" | "price" | "area";
 
 const Favorite = () => {
-    const navigate = useNavigate();
-  const [favorites, setFavorites] = useState<any[]>([]);
+  const navigate = useNavigate();
+  const [favorites, setFavorites] = useState<FavoriteProperty[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [loadingComparison, setLoadingComparison] = useState(false);
+  const [comparison, setComparison] = useState("");
+  const [sortBy, setSortBy] = useState<SortOption>("recent");
 
   useEffect(() => {
-    fetchFavorites();
+    const loadFavorites = async () => {
+      try {
+        const data = await getFavorites();
+        setFavorites(data);
+      } catch (error) {
+        console.error("Unable to load favorites:", error);
+        toast.error("Unable to load favorites.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadFavorites();
   }, []);
 
-  const fetchFavorites = async () => {
-    try {
-      const data = await getFavorites();
-
-      setFavorites(data);
-    } catch (error) {
-      console.log(error);
+  const sortedFavorites = useMemo(() => {
+    const items = [...favorites];
+    if (sortBy === "price") {
+      return items.sort((a, b) => Number(a.price) - Number(b.price));
     }
-  };
+    if (sortBy === "area") {
+      return items.sort((a, b) => Number(b.area) - Number(a.area));
+    }
+    return items;
+  }, [favorites, sortBy]);
+
+  const averagePrice = favorites.length
+    ? Math.round(favorites.reduce((total, property) => total + Number(property.price), 0) / favorites.length)
+    : 0;
 
   const handleRemove = async (propertyId: string) => {
     try {
       await removeFavorite(propertyId);
-
-      setFavorites((prev) =>
-        prev.filter((item) => item.id !== propertyId)
-      );
-
-      alert("Removed from favorites");
+      setFavorites((items) => items.filter((property) => property.id !== propertyId));
+      toast.success("Removed from favorites");
     } catch (error) {
-      console.log(error);
+      console.error("Unable to remove favorite:", error);
+      toast.error("Unable to remove favorite.");
     }
   };
 
-  if (favorites.length === 0) {
+  const handleComparison = async () => {
+    try {
+      setLoadingComparison(true);
+      const response = await compareProperties();
+      setComparison(response.comparison);
+      toast.success("Comparison complete!");
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Unable to compare properties.");
+    } finally {
+      setLoadingComparison(false);
+    }
+  };
+
+  if (loading) {
     return (
-      <h2 className="text-center mt-10">
-        No favorite properties yet.
-      </h2>
+      <div className="min-h-screen bg-slate-950 grid place-items-center">
+        <div className="text-center">
+          <div className="w-12 h-12 border-4 border-slate-700 border-t-cyan-500 rounded-full animate-spin mx-auto"></div>
+          <p className="text-sm text-slate-400 mt-4">Loading your saved properties...</p>
+        </div>
+      </div>
     );
   }
 
   return (
-<div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
-
-    {/* Header */}
-    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-8">
-      <div className="flex items-center gap-3">
-        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-cyan-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-cyan-500/20">
-          <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-          </svg>
-        </div>
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-            My Favorites
-          </h1>
-          <p className="text-sm text-slate-400 mt-0.5 flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse"></span>
-            {favorites.length} {favorites.length === 1 ? 'property' : 'properties'} saved
-          </p>
-        </div>
-      </div>
-      {/* =============================================AI BUTTON==================================================== */}
-      <div className="flex flex-wrap items-center gap-3">
-        {/* AI Comparison Button - Classic Elegant Design */}
-        <button
-          onClick={() => {/* AI Comparison logic */}}
-          disabled={favorites.length < 2}
-          className="
-          group
-          relative
-          px-5 py-2.5 
-          rounded-lg 
-          bg-gradient-to-r from-purple-600 to-pink-600 
-          text-white text-sm font-medium 
-          hover:from-purple-700 hover:to-pink-700 
-          shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 
-          transition-all duration-300 
-          flex items-center gap-2
-          disabled:opacity-40 
-          disabled:cursor-not-allowed 
-          disabled:hover:shadow-lg
-          overflow-hidden
-          "
-        >
-          {/* Shine Effect */}
-          <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></span>
-          
-          {/* Sparkle Icon */}
-          <svg className="w-4 h-4 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
-          
-          <span className="relative z-10">AI Comparison</span>
-          
-          {/* Classic Badge */}
-          <span className="relative z-10 px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider bg-white/20 text-white rounded-full border border-white/10">
-            Beta
-          </span>
-          
-          {/* Tooltip */}
-          {favorites.length < 2 && (
-            <span className="absolute -top-9 left-1/2 -translate-x-1/2 px-2.5 py-1 bg-slate-800 text-white text-[10px] rounded shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap pointer-events-none">
-              Need 2+ favorites to compare
-            </span>
-          )}
-        </button>
-
-{/* ================================================================================================== */}
-
-        {/* Browse More Button - Classic Design */}
-        <button
-          onClick={() => navigate('/properties')}
-          className="
-          px-5 py-2.5 
-          rounded-lg 
-          border border-slate-600 
-          text-slate-300 text-sm font-medium 
-          hover:bg-slate-700/50 
-          hover:border-cyan-500/30 
-          hover:text-white 
-          transition-all duration-300 
-          flex items-center gap-2
-          group
-          "
-        >
-          <svg className="w-4 h-4 transition-transform duration-300 group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          Browse More
-        </button>
-      </div>
-    </div>
-
-    {/* Favorites Grid */}
-    {favorites.length === 0 ? (
-      <div className="text-center py-20 bg-slate-800/40 backdrop-blur-sm rounded-2xl border border-slate-700/50">
-        <div className="w-20 h-20 mx-auto rounded-full bg-slate-900/50 flex items-center justify-center mb-4 border border-cyan-500/20">
-          <svg className="w-10 h-10 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-          </svg>
-        </div>
-        <h3 className="text-xl font-semibold text-white mb-2">
-          No favorites yet
-        </h3>
-        <p className="text-sm text-slate-400 max-w-sm mx-auto">
-          Start saving properties you love and they'll appear here
-        </p>
-        <button
-          onClick={() => navigate('/properties')}
-          className="mt-6 px-6 py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-cyan-600 text-white text-sm font-medium hover:from-cyan-600 hover:to-cyan-700 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300"
-        >
-          Browse Properties
-        </button>
-      </div>
-    ) : (
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-6">
-        {favorites.map((property) => (
-          <div
-            key={property.id}
-            className="group bg-slate-800/40 backdrop-blur-sm rounded-2xl border border-slate-700/50 overflow-hidden hover:border-cyan-500/40 hover:shadow-xl hover:shadow-cyan-500/5 hover:-translate-y-1 transition-all duration-400"
+    <div className="min-h-screen bg-slate-950">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        {/* Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-white">Saved Properties</h1>
+            <p className="text-sm text-slate-400 mt-1">
+              {favorites.length} {favorites.length === 1 ? 'property' : 'properties'} in your collection
+            </p>
+          </div>
+          <Link
+            to="/properties"
+            className="px-4 py-2 text-sm font-medium text-slate-300 border border-slate-700 rounded-lg hover:bg-slate-800 transition"
           >
-            {/* Image */}
-            <div className="relative overflow-hidden h-56 sm:h-64 bg-slate-900/50">
-              <img
-                src={`http://localhost:8081${property.images?.[0]}`}
-                alt={property.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-600"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = "/uploads/properties/image-unavailable.svg";
-                }}
-              />
-              
-              {/* Price Badge */}
-              <div className="absolute top-3 right-3 bg-gradient-to-r from-cyan-500 to-indigo-500 text-white px-3 py-1 rounded-lg text-sm font-semibold shadow-lg shadow-cyan-500/30">
-                ৳ {typeof property.price === 'number' ? property.price.toLocaleString() : property.price}
+            Browse More
+          </Link>
+        </div>
+
+        {/* Empty State */}
+        {favorites.length === 0 ? (
+          <div className="text-center py-20 mt-6 bg-slate-900/50 rounded-xl border border-slate-800">
+            <div className="text-5xl mb-4">🏠</div>
+            <h3 className="text-xl font-semibold text-white">No favorites yet</h3>
+            <p className="text-sm text-slate-400 mt-2">Start saving properties you love</p>
+            <Link
+              to="/properties"
+              className="inline-block mt-6 px-6 py-2.5 bg-cyan-600 text-white text-sm font-medium rounded-lg hover:bg-cyan-700 transition"
+            >
+              Explore Properties
+            </Link>
+          </div>
+        ) : (
+          <>
+            {/* AI Compare Section */}
+            <div className="mt-6 bg-gradient-to-r from-slate-900/80 to-slate-800/50 rounded-xl border border-slate-800 p-5">
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div>
+                  <h3 className="text-sm font-semibold text-white">AI Property Comparison</h3>
+                  <p className="text-xs text-slate-400 mt-1">
+                    {favorites.length >= 2
+                      ? `Compare ${favorites.length} properties side by side`
+                      : `Add ${2 - favorites.length} more ${favorites.length === 1 ? 'property' : 'properties'} to compare`}
+                  </p>
+                </div>
+                <button
+                  onClick={handleComparison}
+                  disabled={loadingComparison || favorites.length < 2}
+                  className="px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-violet-600 to-purple-600 rounded-lg hover:from-violet-700 hover:to-purple-700 transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-violet-600/20"
+                >
+                  {loadingComparison ? (
+                    <span className="flex items-center gap-2">
+                      <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      </svg>
+                      Analyzing...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">✨ Compare with AI</span>
+                  )}
+                </button>
               </div>
-              
-              {/* Property Type Badge */}
-              {property.property_type && (
-                <div className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-sm text-cyan-400 px-3 py-1 rounded-lg text-xs font-medium border border-cyan-500/20 shadow-lg">
-                  {property.property_type}
+
+              {/* Quick Stats for Comparison */}
+              {favorites.length >= 2 && (
+                <div className="grid grid-cols-3 gap-3 mt-4 pt-4 border-t border-slate-800">
+                  <div>
+                    <p className="text-xs text-slate-500">Price Range</p>
+                    <p className="text-sm font-medium text-white mt-0.5">
+                      ৳ {Math.min(...favorites.map(p => Number(p.price))).toLocaleString()} - 
+                      ৳ {Math.max(...favorites.map(p => Number(p.price))).toLocaleString()}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">Avg Bedrooms</p>
+                    <p className="text-sm font-medium text-white mt-0.5">
+                      {(favorites.reduce((acc, p) => acc + p.bedrooms, 0) / favorites.length).toFixed(1)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">Avg Area</p>
+                    <p className="text-sm font-medium text-white mt-0.5">
+                      {(favorites.reduce((acc, p) => acc + Number(p.area), 0) / favorites.length).toFixed(0)} sqft
+                    </p>
+                  </div>
                 </div>
               )}
             </div>
 
-            {/* Content */}
-            <div className="p-5 sm:p-6">
-              <h2 className="text-lg sm:text-xl font-semibold text-white tracking-tight line-clamp-1 group-hover:text-cyan-400 transition-colors duration-300">
-                {property.title}
-              </h2>
-
-              <div className="flex items-center gap-1.5 mt-1.5">
-                <svg className="w-4 h-4 text-cyan-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
-                <p className="text-sm text-slate-400 truncate">{property.location}</p>
-              </div>
-
-              {/* Features */}
-              <div className="mt-4 flex items-center justify-between py-3 px-4 bg-slate-900/30 rounded-xl border border-slate-700/30">
-                <div className="flex items-center gap-1.5">
-                  <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
-                  <span className="text-sm font-medium text-slate-300">{property.bedrooms} Bed</span>
-                </div>
-                <div className="w-px h-6 bg-slate-700"></div>
-                <div className="flex items-center gap-1.5">
-                  <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  <span className="text-sm font-medium text-slate-300">{property.bathrooms} Bath</span>
-                </div>
-                <div className="w-px h-6 bg-slate-700"></div>
-                <div className="flex items-center gap-1.5">
-                  <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5v-4m0 4h-4m4 0l-5-5" />
-                  </svg>
-                  <span className="text-sm font-medium text-slate-300">{property.area} sqft</span>
+            {/* AI Insights - Dynamic */}
+            {comparison && (
+              <div className="mt-4 bg-gradient-to-r from-violet-950/40 to-purple-950/40 border border-violet-800/30 rounded-xl p-6 animate-fadeIn">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-r from-violet-600 to-purple-600 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <h4 className="text-sm font-semibold text-violet-300">AI Recommendation</h4>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-violet-500/20 text-violet-300">Live</span>
+                    </div>
+                    <div className="mt-2 text-sm text-slate-300 whitespace-pre-line leading-relaxed">
+                      {comparison}
+                    </div>
+                  </div>
                 </div>
               </div>
+            )}
 
-              {/* Action Buttons - Classic & Elegant */}
-              <div className="mt-4 grid grid-cols-2 gap-2">
-                <Link
-                  to={`/view-property/${property.id}`}
-                  className="
-                  px-3 py-2
-                  bg-gradient-to-r from-cyan-500 to-indigo-500
-                  text-white
-                  text-xs
-                  font-medium
-                  rounded-lg
-                  hover:from-cyan-600 hover:to-indigo-600
-                  shadow-lg shadow-cyan-500/20
-                  hover:shadow-cyan-500/40
-                  transition-all
-                  duration-300
-                  flex items-center justify-center gap-1.5
-                  group/btn
-                  "
-                >
-                  <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover/btn:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                  View
-                </Link>
-
-                <button
-                  onClick={() => handleRemove(property.id)}
-                  className="
-                  px-3 py-2
-                  bg-slate-700/30
-                  text-slate-400
-                  text-xs
-                  font-medium
-                  rounded-lg
-                  border border-slate-600/30
-                  hover:bg-red-500/10
-                  hover:text-red-400
-                  hover:border-red-500/30
-                  transition-all
-                  duration-300
-                  flex items-center justify-center gap-1.5
-                  group/btn
-                  "
-                >
-                  <svg className="w-3.5 h-3.5 transition-transform duration-200 group-hover/btn:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                  Remove
-                </button>
+            {/* Comparison Table - Dynamic */}
+            {favorites.length >= 2 && (
+              <div className="mt-6 bg-slate-900/50 rounded-xl border border-slate-800 overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="bg-slate-900 border-b border-slate-800">
+                        <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase sticky left-0 bg-slate-900">
+                          Feature
+                        </th>
+                        {favorites.map((property) => (
+                          <th key={property.id} className="px-4 py-3 text-left text-xs font-medium text-white min-w-[120px]">
+                            {property.title.length > 20 ? property.title.substring(0, 20) + '...' : property.title}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[
+                        { 
+                          label: 'Price', 
+                          value: (p: FavoriteProperty) => `৳ ${Number(p.price).toLocaleString()}`,
+                          highlight: (p: FavoriteProperty) => Number(p.price) === Math.min(...favorites.map(f => Number(f.price)))
+                        },
+                        { label: 'Location', value: (p: FavoriteProperty) => p.location },
+                        { label: 'Bedrooms', value: (p: FavoriteProperty) => p.bedrooms },
+                        { label: 'Bathrooms', value: (p: FavoriteProperty) => p.bathrooms },
+                        { label: 'Area', value: (p: FavoriteProperty) => `${p.area} sqft` },
+                        { label: 'Type', value: (p: FavoriteProperty) => p.property_type || 'N/A' },
+                        { 
+                          label: 'Amenities', 
+                          value: (p: FavoriteProperty) => {
+                            if (!p.amenities || p.amenities.length === 0) return 'N/A';
+                            const display = p.amenities.slice(0, 3).join(', ');
+                            return p.amenities.length > 3 ? `${display} +${p.amenities.length - 3} more` : display;
+                          }
+                        },
+                      ].map((row, idx) => (
+                        <tr key={idx} className={`${idx % 2 === 0 ? 'bg-slate-900/30' : ''} hover:bg-slate-800/30 transition`}>
+                          <td className="px-4 py-3 text-xs font-medium text-slate-400 sticky left-0 bg-inherit">
+                            {row.label}
+                          </td>
+                          {favorites.map((property) => {
+                            const isHighlighted = row.highlight && row.highlight(property);
+                            return (
+                              <td key={property.id} className={`px-4 py-3 text-sm ${isHighlighted ? 'text-emerald-400 font-semibold' : 'text-slate-300'}`}>
+                                {row.value(property)}
+                                {isHighlighted && (
+                                  <span className="ml-1 text-xs text-emerald-500">★</span>
+                                )}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
+            )}
+
+            {/* Property Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-6">
+              {sortedFavorites.map((property) => (
+                <div key={property.id} className="bg-slate-900 rounded-xl border border-slate-800 overflow-hidden hover:border-slate-700 transition group">
+                  {/* Image */}
+                  <div className="relative h-48 bg-slate-800 overflow-hidden">
+                    <img
+                      src={property.images?.[0] || '/placeholder.jpg'}
+                      alt={property.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                      onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder.jpg'; }}
+                    />
+                    <div className="absolute top-3 right-3 bg-black/70 px-3 py-1 rounded-lg text-sm font-semibold text-white">
+                      ৳ {Number(property.price).toLocaleString()}
+                    </div>
+                    {property.property_type && (
+                      <div className="absolute top-3 left-3 bg-black/70 px-3 py-1 rounded-lg text-xs text-slate-300">
+                        {property.property_type}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-4">
+                    <h3 className="font-semibold text-white truncate">{property.title}</h3>
+                    <p className="text-sm text-slate-400 truncate mt-1">{property.location}</p>
+                    
+                    <div className="flex items-center gap-4 mt-3 text-xs text-slate-400">
+                      <span>{property.bedrooms} beds</span>
+                      <span>•</span>
+                      <span>{property.bathrooms} baths</span>
+                      <span>•</span>
+                      <span>{property.area} sqft</span>
+                    </div>
+
+                    <div className="flex gap-2 mt-4">
+                      <button
+                        onClick={() => navigate(`/view-property/${property.id}`)}
+                        className="flex-1 px-3 py-2 text-sm font-medium text-white bg-cyan-600 rounded-lg hover:bg-cyan-700 transition"
+                      >
+                        View
+                      </button>
+                      <button
+                        onClick={() => handleRemove(property.id)}
+                        className="px-3 py-2 text-sm font-medium text-slate-400 border border-slate-700 rounded-lg hover:border-red-500/50 hover:text-red-400 transition"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
-        ))}
+          </>
+        )}
       </div>
-    )}
-  </div>
-</div>
+    </div>
   );
 };
 

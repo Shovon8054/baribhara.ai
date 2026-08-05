@@ -8,6 +8,7 @@ import profileRoutes from "../profile/profile.routes.js";
 import detailsRoutes from "../property-details/details.routes.js";
 import aiRoutes from "../ai/ai.routes.js";
 import favoriteRoutes from "../favorites/favorite.routes.js";
+import comparisonRoutes from "../ai-comparison/comparison.routes.js";
 const router = Router();
 router.use("/auth", authRoutes);
 // POST http://localhost:8083/api/auth/register
@@ -22,5 +23,6 @@ router.get("/", propertyController.getAllProperties);
 router.use("/profile", profileRoutes);
 router.use("/property-details", detailsRoutes);
 router.use("/favorites", favoriteRoutes);
+router.use("/ai", comparisonRoutes);
 // console.log("Main routes loaded");
 export default router;
