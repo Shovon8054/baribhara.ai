@@ -10,6 +10,7 @@ import TenantNavbar from './navbar';
 import { useLocation } from 'react-router-dom';
 
 import CreateProperty from './pages/property-listing/CreateProperty';
+import ViewProperty from './pages/property-listing/ViewProperty';
 import Profile from './pages/profile/Profile';
 import AISearchPage from './pages/AISearchPage';
 
@@ -56,6 +57,8 @@ const App = () => {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/create-property" element={<CreateProperty />} />
           <Route path="/properties" element={<Properties />} />
+          <Route path="/view-property/:id" element={<ViewProperty />} />
+          <Route path="/properties/view-property/:id" element={<ViewProperty />} />
           <Route path="/browse-properties" element={<Properties />} />
           <Route path="/ai-search" element={<AISearchPage />} />
           <Route path="/profile" element={<Profile />} />

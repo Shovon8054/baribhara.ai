@@ -213,7 +213,7 @@ const Properties = () => {
                   </div>
 
                   <button 
-                    onClick={() => navigate(`/properties/${property.id}`)}
+                    onClick={() => navigate(`/view-property/${property.id}`)}
                     className="
                     w-full
                     mt-5

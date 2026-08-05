@@ -5,6 +5,7 @@ import propertyRoutes from "../property-listing/property.routes.js";
 import requireAuth from "../middleware/authMiddleware.js";
 import propertyController from "../property-listing/property.controller.js";
 import profileRoutes from "../profile/profile.routes.js";
+import detailsRoutes from "../property-details/details.routes.js";
 
 import aiRoutes from "../ai/ai.routes.js";
 
@@ -27,6 +28,9 @@ router.use(requireAuth);
 router.use("/property", propertyRoutes);
 router.get("/", propertyController.getAllProperties);
 router.use("/profile", profileRoutes);
+
+
+router.use("/property-details", detailsRoutes);
 
 // console.log("Main routes loaded");
 
