@@ -29,5 +29,27 @@ const aiController = {
             });
         }
     },
+    async listingAssistant(req, res) {
+        try {
+            const { action, data, text } = req.body;
+            const result = await aiService.listingAssistant(action, data, text);
+            res.status(200).json({
+                success: true,
+                result,
+            });
+        }
+        catch (error) {
+            const message = error instanceof Error ? error.message : "Something went wrong";
+            const status = message === "Unsupported listing assistant action" || message.includes("required")
+                ? 400
+                : message.includes("GEMINI_API_KEY")
+                    ? 503
+                    : 500;
+            res.status(status).json({
+                success: false,
+                message,
+            });
+        }
+    }
 };
 export default aiController;

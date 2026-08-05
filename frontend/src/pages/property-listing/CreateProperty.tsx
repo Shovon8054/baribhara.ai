@@ -2,6 +2,9 @@ import { useState } from "react";
 import { createProperty } from "../../services/property.service";
 import { useNavigate } from "react-router-dom";
 
+import AIListingAssistant from "../../components/AIListingAssistant";
+
+
 
 const CreateProperty = () => {
       const navigate = useNavigate();
@@ -127,6 +130,21 @@ const CreateProperty = () => {
         {/* Body - Ultra Compact */}
         <div className="p-3 sm:p-4 space-y-2.5">
 
+            {/* AI Listing Assistant */}
+            <AIListingAssistant
+                propertyInfo={{
+                    propertyType: property.property_type || '',
+                    location: property.location || '',
+                    bedrooms: property.bedrooms || '',
+                    bathrooms: property.bathrooms || '',
+                    price: property.price || '',
+                    parking: property.parking || false,
+                    lift: property.lift || false,
+                }}
+                onApplyTitle={(title) => setProperty((current) => ({ ...current, title }))}
+                onApplyDescription={(description) => setProperty((current) => ({ ...current, description }))}
+            />
+
             {/* Basic Information - Ultra Compact */}
             <div className="space-y-2">
                 <div className="space-y-0.5">
@@ -142,6 +160,7 @@ const CreateProperty = () => {
                         <input
                             name="title"
                             placeholder="Enter title"
+                            value={property.title}
                             onChange={handleChange}
                             required
                             className="
@@ -177,6 +196,7 @@ const CreateProperty = () => {
                         <textarea
                             name="description"
                             placeholder="Describe property..."
+                            value={property.description}
                             onChange={handleChange}
                             rows={2}
                             required
@@ -214,6 +234,7 @@ const CreateProperty = () => {
                             name="price"
                             type="number"
                             placeholder="0"
+                            value={property.price}
                             onChange={handleChange}
                             required
                             className="
@@ -250,6 +271,7 @@ const CreateProperty = () => {
                             name="area"
                             type="number"
                             placeholder="sq ft"
+                            value={property.area}
                             onChange={handleChange}
                             required
                             className="
@@ -288,6 +310,7 @@ const CreateProperty = () => {
                     <input
                         name="location"
                         placeholder="Enter location"
+                        value={property.location}
                         onChange={handleChange}
                         required
                         className="
@@ -326,6 +349,7 @@ const CreateProperty = () => {
                             name="bedrooms"
                             type="number"
                             placeholder="0"
+                            value={property.bedrooms}
                             onChange={handleChange}
                             required
                             className="
@@ -362,6 +386,7 @@ const CreateProperty = () => {
                             name="bathrooms"
                             type="number"
                             placeholder="0"
+                            value={property.bathrooms}
                             onChange={handleChange}
                             required
                             className="
@@ -398,6 +423,7 @@ const CreateProperty = () => {
                     </div>
                     <select
                         name="property_type"
+                        value={property.property_type}
                         onChange={handleChange}
                         className="
                         w-full
@@ -417,6 +443,7 @@ const CreateProperty = () => {
                         hover:border-slate-600
                         "
                     >
+                        <option value="">Select Type</option>
                         <option value="APARTMENT" className="bg-slate-900">Apartment</option>
                         <option value="HOUSE" className="bg-slate-900">House</option>
                         <option value="FLAT" className="bg-slate-900">Flat</option>
@@ -447,6 +474,7 @@ const CreateProperty = () => {
                         <input
                             name="amenities"
                             placeholder="WiFi, AC"
+                            value={property.amenities}
                             onChange={handleChange}
                             className="
                             w-full
@@ -482,6 +510,7 @@ const CreateProperty = () => {
                         <input
                             name="nearby_facilities"
                             placeholder="School, Hospital"
+                            value={property.nearby_facilities}
                             onChange={handleChange}
                             className="
                             w-full

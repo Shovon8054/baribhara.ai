@@ -60,12 +60,6 @@ const TenantNavbar = () => {
 
     {/* Desktop Menu */}
     <div className="hidden md:flex items-center gap-1 lg:gap-2">
-      <Link
-        to="/home"
-        className="px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all duration-300"
-      >
-        Home
-      </Link>
       
       {/* AI Search - Classy Design */}
       <Link
@@ -123,6 +117,13 @@ const TenantNavbar = () => {
         
         {/* Shine */}
         <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 bg-gradient-to-r from-transparent via-white/5 to-transparent"></span>
+      </Link>
+
+      <Link
+        to="/properties"
+        className="px-3 py-2 rounded-lg text-sm font-medium text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all duration-300"
+      >
+        Home
       </Link>
       
       <Link
@@ -182,16 +183,7 @@ const TenantNavbar = () => {
     {/* Mobile Menu */}
     {isMobileMenuOpen && (
       <div className="md:hidden w-full bg-slate-950/98 backdrop-blur-xl rounded-xl border border-slate-800 p-4 mt-2 space-y-2 animate-slideDown">
-        <Link
-          to="/home"
-          className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all duration-300"
-          onClick={() => setIsMobileMenuOpen(false)}
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-          </svg>
-          Home
-        </Link>
+
         
         {/* AI Search - Classy Mobile */}
         <Link
@@ -222,6 +214,17 @@ const TenantNavbar = () => {
           <span className="ml-auto px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-[0.15em] bg-gradient-to-r from-cyan-400/20 to-cyan-500/20 text-cyan-300 rounded-full border border-cyan-400/20">
             New
           </span>
+        </Link>
+
+        <Link
+          to="/properties"
+          className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50 transition-all duration-300"
+          onClick={() => setIsMobileMenuOpen(false)}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+          Home
         </Link>
         
         <Link

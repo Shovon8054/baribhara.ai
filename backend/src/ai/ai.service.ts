@@ -3,6 +3,51 @@ import { GoogleGenAI } from "@google/genai";
 export type PropertyFilters = Record<string, string | number | boolean>;
 
 class AIService {
+  async listingAssistant(
+    action: string,
+    data?: Record<string, unknown>,
+    text?: string
+  ): Promise<string> {
+    const supportedActions = ["title", "description", "improve", "translate_bn", "translate_en"];
+    if (!supportedActions.includes(action)) {
+      throw new Error("Unsupported listing assistant action");
+    }
+
+    if ((action === "title" || action === "description") && (!data || typeof data !== "object")) {
+      throw new Error("Property details are required");
+    }
+    if (["improve", "translate_bn", "translate_en"].includes(action) && !text?.trim()) {
+      throw new Error("Text is required for this action");
+    }
+
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return this.listingFallback(action, data, text);
+    }
+
+    const instructions: Record<string, string> = {
+      title: "Write one concise, appealing property-listing title. Return only the title.",
+      description: "Write a professional, renter-focused property description in English. Use only supplied facts; do not invent amenities or claims. Return only the description.",
+      improve: "Improve this property-listing description for clarity and appeal. Preserve all facts and return only the revised description.",
+      translate_bn: "Translate this property-listing text into natural Bangla. Preserve facts, numbers, and tone. Return only the translation.",
+      translate_en: "Translate this property-listing text into clear natural English. Preserve facts, numbers, and tone. Return only the translation.",
+    };
+
+    const context = data
+      ? `Property details:\n${JSON.stringify(data)}`
+      : `Text to process:\n${text}`;
+
+    const ai = new GoogleGenAI({ apiKey });
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: `${instructions[action]}\n\n${context}`,
+    });
+    const result = response.text?.trim();
+    if (!result) throw new Error("AI returned an empty response");
+
+    return result;
+  }
+
   async extractFilters(userQuery: string): Promise<PropertyFilters> {
     const apiKey = process.env.GEMINI_API_KEY;
 
@@ -120,6 +165,39 @@ PENTHOUSE, or DUPLEX. Treat phrases like "duplex flat" as DUPLEX.`,
       if (typeof normalized[key] === "boolean") normalized[key] = String(normalized[key]);
     }
     return normalized;
+  }
+
+  private listingFallback(
+    action: string,
+    data?: Record<string, unknown>,
+    text?: string
+  ): string {
+    if (action === "title") {
+      const bedrooms = data?.bedrooms ? `${data.bedrooms} Bedroom ` : "";
+      const type = String(data?.propertyType || "Property").trim();
+      const location = data?.location ? ` in ${String(data.location).trim()}` : "";
+      return `${bedrooms}${type}${location}`.replace(/\s+/g, " ").trim();
+    }
+
+    if (action === "description") {
+      const type = String(data?.propertyType || "property").trim().toLowerCase();
+      const location = data?.location ? ` in ${String(data.location).trim()}` : "";
+      const rooms = [
+        data?.bedrooms ? `${data.bedrooms} bedroom${String(data.bedrooms) === "1" ? "" : "s"}` : "",
+        data?.bathrooms ? `${data.bathrooms} bathroom${String(data.bathrooms) === "1" ? "" : "s"}` : "",
+      ].filter(Boolean).join(" and ");
+      const amenities = [data?.parking ? "parking" : "", data?.lift ? "a lift" : ""].filter(Boolean).join(" and ");
+      const rent = data?.price ? ` Monthly rent: ৳${data.price}.` : "";
+      return `Well-presented ${type}${location}${rooms ? ` with ${rooms}` : ""}.${amenities ? ` The property includes ${amenities}.` : ""}${rent} Contact us to arrange a viewing.`;
+    }
+
+    if (action === "improve") {
+      const cleaned = String(text).trim().replace(/\s+/g, " ");
+      const hasViewingCallToAction = /arrange a viewing|contact us today|contact us to/i.test(cleaned);
+      return `${cleaned}${hasViewingCallToAction ? "" : " Contact us today to arrange a viewing."}`;
+    }
+
+    throw new Error("Translation requires a GEMINI_API_KEY to be configured");
   }
 }
 
