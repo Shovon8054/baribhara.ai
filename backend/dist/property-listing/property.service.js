@@ -1,12 +1,7 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const dbConnection_1 = __importDefault(require("../db/dbConnection"));
+import pool from "../db/dbConnection.js";
 class PropertyService {
     async createProperty(property) {
-        const client = await dbConnection_1.default.connect();
+        const client = await pool.connect();
         try {
             await client.query("BEGIN");
             const { title, description, price, bedrooms, bathrooms, area, location, latitude, longitude, property_type, furnished = false, family_bachelor = "ANY", parking = false, lift = false, pet_friendly = false, availability = true, amenities = [], nearby_facilities = [], images = [], owner_id, } = property;
@@ -83,7 +78,7 @@ class PropertyService {
         }
     }
     async getAllProperties() {
-        const result = await dbConnection_1.default.query(`
+        const result = await pool.query(`
     SELECT
       id,
       title,
@@ -114,7 +109,7 @@ class PropertyService {
     }
     async deleteProperty(propertyId, ownerId) {
         // Check ownership
-        const property = await dbConnection_1.default.query(`
+        const property = await pool.query(`
     SELECT images
     FROM properties
     WHERE id = $1
@@ -123,7 +118,7 @@ class PropertyService {
         if (property.rows.length === 0) {
             throw new Error("Property not found or unauthorized");
         }
-        await dbConnection_1.default.query(`
+        await pool.query(`
     DELETE FROM properties
     WHERE id = $1
     `, [propertyId]);
@@ -165,23 +160,27 @@ class PropertyService {
             sql += ` AND area <= $${values.length}`;
         }
         if (query.property_type) {
-            values.push(query.property_type);
+            values.push(String(query.property_type).toUpperCase());
             sql += ` AND property_type = $${values.length}`;
         }
         if (query.family_bachelor) {
-            values.push(query.family_bachelor);
-            sql += ` AND family_bachelor = $${values.length}`;
+            values.push(String(query.family_bachelor).toUpperCase());
+            sql += ` AND family_bachelor IN ($${values.length}, 'ANY')`;
+        }
+        if (query.furnished !== undefined) {
+            values.push(String(query.furnished).toLowerCase() === "true");
+            sql += ` AND furnished = $${values.length}`;
         }
         if (query.parking !== undefined) {
-            values.push(query.parking === "true");
+            values.push(String(query.parking).toLowerCase() === "true");
             sql += ` AND parking = $${values.length}`;
         }
         if (query.lift !== undefined) {
-            values.push(query.lift === "true");
+            values.push(String(query.lift).toLowerCase() === "true");
             sql += ` AND lift = $${values.length}`;
         }
         if (query.pet_friendly !== undefined) {
-            values.push(query.pet_friendly === "true");
+            values.push(String(query.pet_friendly).toLowerCase() === "true");
             sql += ` AND pet_friendly = $${values.length}`;
         }
         // Sorting
@@ -204,8 +203,8 @@ class PropertyService {
             default:
                 sql += ` ORDER BY created_at DESC`;
         }
-        const result = await dbConnection_1.default.query(sql, values);
+        const result = await pool.query(sql, values);
         return result.rows;
     }
 }
-exports.default = new PropertyService();
+export default new PropertyService();

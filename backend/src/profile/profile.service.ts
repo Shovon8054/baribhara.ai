@@ -1,4 +1,4 @@
-import pool from "../db/dbConnection";
+import pool from "../db/dbConnection.js";
 
 class ProfileService {
   async getProfile(userId: string) {

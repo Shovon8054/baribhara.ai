@@ -1,13 +1,10 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const pg_1 = require("pg");
-const dotenv_1 = __importDefault(require("dotenv"));
-const path_1 = __importDefault(require("path"));
-dotenv_1.default.config({ path: path_1.default.resolve(__dirname, '../../../.env') });
-const pool = new pg_1.Pool({
+import { Pool } from 'pg';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
+const pool = new Pool({
     host: process.env.DB_HOST || 'localhost',
     // PostgreSQL's standard port. 8080 is reserved for this API server.
     port: Number(process.env.DB_PORT) || 5432,
@@ -17,4 +14,4 @@ const pool = new pg_1.Pool({
     max: 10,
     idleTimeoutMillis: 30000,
 });
-exports.default = pool;
+export default pool;

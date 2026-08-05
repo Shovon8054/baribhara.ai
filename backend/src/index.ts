@@ -1,8 +1,9 @@
 import dotenv from 'dotenv';
-import app from './app';
-import pool from './db/dbConnection';
+import path from 'path';
+import app from './app.js';
+import pool from './db/dbConnection.js';
 
-dotenv.config({ path: require('path').resolve(__dirname, '../../.env') });
+dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
 
 const HOST = process.env.HOST || '0.0.0.0';
 const BASE_PORT = Number(process.env.PORT) || 8080;

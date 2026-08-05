@@ -1,14 +1,9 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const auth_service_1 = __importDefault(require("./auth.service"));
+import authService from "./auth.service.js";
 const authController = {
     async register(req, res) {
         try {
             const { name, email, password, phone, role } = req.body;
-            const result = await auth_service_1.default.register({
+            const result = await authService.register({
                 full_name: name,
                 email,
                 password,
@@ -30,4 +25,4 @@ const authController = {
         }
     },
 };
-exports.default = authController;
+export default authController;

@@ -1,16 +1,12 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const dotenv_1 = __importDefault(require("dotenv"));
-const app_1 = __importDefault(require("./app"));
-const dbConnection_1 = __importDefault(require("./db/dbConnection"));
-dotenv_1.default.config({ path: require('path').resolve(__dirname, '../../.env') });
+import dotenv from 'dotenv';
+import path from 'path';
+import app from './app.js';
+import pool from './db/dbConnection.js';
+dotenv.config({ path: path.resolve(process.cwd(), '../.env') });
 const HOST = process.env.HOST || '0.0.0.0';
 const BASE_PORT = Number(process.env.PORT) || 8080;
 const startServer = (port) => {
-    const server = app_1.default.listen(port, HOST, () => {
+    const server = app.listen(port, HOST, () => {
         console.log(`Server running on http://${HOST}:${port}`);
     });
     server.on('error', (error) => {
@@ -26,7 +22,7 @@ const startServer = (port) => {
 };
 const initializeApp = async () => {
     try {
-        const client = await dbConnection_1.default.connect();
+        const client = await pool.connect();
         await client.query('SELECT 1');
         client.release();
         console.log('DB connected successfully');

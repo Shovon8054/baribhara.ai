@@ -1,4 +1,4 @@
-import pool from "../../db/dbConnection";
+import pool from "../../db/dbConnection.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 

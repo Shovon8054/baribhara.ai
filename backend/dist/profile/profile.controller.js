@@ -1,14 +1,9 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const profile_service_1 = __importDefault(require("./profile.service"));
+import profileService from "./profile.service.js";
 const profileController = {
     async getProfile(req, res) {
         try {
             const userId = req.user.id;
-            const profile = await profile_service_1.default.getProfile(userId);
+            const profile = await profileService.getProfile(userId);
             res.status(200).json({
                 success: true,
                 data: profile,
@@ -24,7 +19,7 @@ const profileController = {
     async getMyProperties(req, res) {
         try {
             const userId = req.user.id;
-            const properties = await profile_service_1.default.getMyProperties(userId);
+            const properties = await profileService.getMyProperties(userId);
             res.status(200).json({
                 success: true,
                 count: properties.length,
@@ -39,4 +34,4 @@ const profileController = {
         }
     },
 };
-exports.default = profileController;
+export default profileController;

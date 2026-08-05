@@ -1,11 +1,6 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const property_service_1 = __importDefault(require("./property.service"));
-const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
+import propertyService from "./property.service.js";
+import fs from "fs";
+import path from "path";
 const propertyController = {
     async createProperty(req, res) {
         try {
@@ -28,7 +23,7 @@ const propertyController = {
             if (isNaN(priceNum) || isNaN(bedroomsNum) || isNaN(bathroomsNum) || isNaN(areaNum)) {
                 return res.status(400).json({ success: false, message: "Invalid numeric values for price/bedrooms/bathrooms/area" });
             }
-            const property = await property_service_1.default.createProperty({
+            const property = await propertyService.createProperty({
                 title,
                 description,
                 price: priceNum,
@@ -74,7 +69,7 @@ const propertyController = {
     },
     async getAllProperties(req, res) {
         try {
-            const properties = await property_service_1.default.getAllProperties();
+            const properties = await propertyService.getAllProperties();
             res.status(200).json({
                 success: true,
                 count: properties.length,
@@ -96,12 +91,12 @@ const propertyController = {
                 return res.status(400).json({ success: false, message: "A valid property ID is required" });
             }
             const ownerId = req.user.id;
-            const property = await property_service_1.default.deleteProperty(propertyId, ownerId);
+            const property = await propertyService.deleteProperty(propertyId, ownerId);
             // Delete images from uploads folder
             for (const image of property.images) {
-                const imagePath = path_1.default.join(__dirname, "../uploads/properties", path_1.default.basename(image));
-                if (fs_1.default.existsSync(imagePath)) {
-                    fs_1.default.unlinkSync(imagePath);
+                const imagePath = path.join(__dirname, "../uploads/properties", path.basename(image));
+                if (fs.existsSync(imagePath)) {
+                    fs.unlinkSync(imagePath);
                 }
             }
             res.status(200).json({
@@ -119,7 +114,7 @@ const propertyController = {
     },
     async searchProperties(req, res) {
         try {
-            const properties = await property_service_1.default.searchProperties(req.query);
+            const properties = await propertyService.searchProperties(req.query);
             res.status(200).json({
                 success: true,
                 count: properties.length,
@@ -137,4 +132,4 @@ const propertyController = {
         }
     }
 };
-exports.default = propertyController;
+export default propertyController;

@@ -1,8 +1,8 @@
 import { Router } from "express";
 import multer from "multer";
 import path from "path";
-import propertyController from "./property.controller";
-import requireAuth from "../middleware/authMiddleware";
+import propertyController from "./property.controller.js";
+import requireAuth from "../middleware/authMiddleware.js";
 
 
 

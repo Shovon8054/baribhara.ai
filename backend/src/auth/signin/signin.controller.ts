@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import signInService from "./signin.service";
+import signInService from "./signin.service.js";
 
 export async function login(req: Request, res: Response) {
   try {

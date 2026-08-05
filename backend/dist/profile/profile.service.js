@@ -1,12 +1,7 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const dbConnection_1 = __importDefault(require("../db/dbConnection"));
+import pool from "../db/dbConnection.js";
 class ProfileService {
     async getProfile(userId) {
-        const result = await dbConnection_1.default.query(`
+        const result = await pool.query(`
         SELECT id, full_name AS name, email, phone, role
         FROM users
         WHERE id = $1
@@ -17,7 +12,7 @@ class ProfileService {
         return result.rows[0];
     }
     async getMyProperties(userId) {
-        const result = await dbConnection_1.default.query(`
+        const result = await pool.query(`
         SELECT id, title, price, location, bedrooms, bathrooms, area, images, availability
         FROM properties
         WHERE owner_id = $1
@@ -26,4 +21,4 @@ class ProfileService {
         return result.rows;
     }
 }
-exports.default = new ProfileService();
+export default new ProfileService();

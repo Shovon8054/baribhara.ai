@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import propertyService from "./property.service";
+import propertyService from "./property.service.js";
 import fs from "fs";
 import path from "path";
 
