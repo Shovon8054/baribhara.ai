@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getPropertyDetails } from "../../services/propertyDetails.service";
 import { PropertyDetails } from "../../types/property";
+import { addToFavorites } from "../../services/favorite.service";
+
+import toast from "react-hot-toast";
 
 const ViewProperty = () => {
   const { id } = useParams<{ id: string }>();
@@ -24,6 +27,7 @@ const ViewProperty = () => {
     }
     fetchProperty();
   }, [id]);
+
 
   const fetchProperty = async () => {
     try {
@@ -94,6 +98,21 @@ const ViewProperty = () => {
       </div>
     );
   }
+
+//   ======================== Add to Favorites Handler =========================
+  const handleFavorite = async () => {
+    if (!property) return;
+
+    try {
+        const res = await addToFavorites(property.id);
+
+        toast.success(res.message);
+    } catch (error: any) {
+        toast.error(
+        error.response?.data?.message || "Failed to add favorite"
+        );
+    }
+    };
 
   return (
 <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
@@ -361,7 +380,7 @@ const ViewProperty = () => {
         {/* add to fac button========================================================= */}
       <button
         className="px-6 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-indigo-500 text-white text-sm font-medium hover:from-cyan-600 hover:to-indigo-600 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300 flex items-center gap-2"
-        onClick={() => {/* Add to favorites logic */}}
+        onClick={() => {handleFavorite()}}
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />

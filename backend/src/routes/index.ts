@@ -8,6 +8,8 @@ import profileRoutes from "../profile/profile.routes.js";
 import detailsRoutes from "../property-details/details.routes.js";
 
 import aiRoutes from "../ai/ai.routes.js";
+import favoriteRoutes from "../favorites/favorite.routes.js";
+
 
 
 
@@ -31,6 +33,7 @@ router.use("/profile", profileRoutes);
 
 
 router.use("/property-details", detailsRoutes);
+router.use("/favorites", favoriteRoutes);
 
 // console.log("Main routes loaded");
 
