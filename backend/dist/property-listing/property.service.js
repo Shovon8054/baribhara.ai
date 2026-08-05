@@ -129,5 +129,83 @@ class PropertyService {
     `, [propertyId]);
         return property.rows[0];
     }
+    async searchProperties(query) {
+        let sql = `
+    SELECT *
+    FROM properties
+    WHERE availability = true
+  `;
+        const values = [];
+        if (query.location) {
+            values.push(`%${query.location}%`);
+            sql += ` AND location ILIKE $${values.length}`;
+        }
+        if (query.minPrice) {
+            values.push(Number(query.minPrice));
+            sql += ` AND price >= $${values.length}`;
+        }
+        if (query.maxPrice) {
+            values.push(Number(query.maxPrice));
+            sql += ` AND price <= $${values.length}`;
+        }
+        if (query.bedrooms) {
+            values.push(Number(query.bedrooms));
+            sql += ` AND bedrooms = $${values.length}`;
+        }
+        if (query.bathrooms) {
+            values.push(Number(query.bathrooms));
+            sql += ` AND bathrooms = $${values.length}`;
+        }
+        if (query.minArea) {
+            values.push(Number(query.minArea));
+            sql += ` AND area >= $${values.length}`;
+        }
+        if (query.maxArea) {
+            values.push(Number(query.maxArea));
+            sql += ` AND area <= $${values.length}`;
+        }
+        if (query.property_type) {
+            values.push(query.property_type);
+            sql += ` AND property_type = $${values.length}`;
+        }
+        if (query.family_bachelor) {
+            values.push(query.family_bachelor);
+            sql += ` AND family_bachelor = $${values.length}`;
+        }
+        if (query.parking !== undefined) {
+            values.push(query.parking === "true");
+            sql += ` AND parking = $${values.length}`;
+        }
+        if (query.lift !== undefined) {
+            values.push(query.lift === "true");
+            sql += ` AND lift = $${values.length}`;
+        }
+        if (query.pet_friendly !== undefined) {
+            values.push(query.pet_friendly === "true");
+            sql += ` AND pet_friendly = $${values.length}`;
+        }
+        // Sorting
+        switch (query.sort) {
+            case "price_asc":
+                sql += ` ORDER BY price ASC`;
+                break;
+            case "price_desc":
+                sql += ` ORDER BY price DESC`;
+                break;
+            case "area_asc":
+                sql += ` ORDER BY area ASC`;
+                break;
+            case "area_desc":
+                sql += ` ORDER BY area DESC`;
+                break;
+            case "oldest":
+                sql += ` ORDER BY created_at ASC`;
+                break;
+            default:
+                sql += ` ORDER BY created_at DESC`;
+        }
+        const result = await dbConnection_1.default.query(sql, values);
+        return result.rows;
+    }
 }
 exports.default = new PropertyService();

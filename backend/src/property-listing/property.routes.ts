@@ -66,6 +66,11 @@ router.get(
   propertyController.getAllProperties
 );
 
+router.get(
+  "/search",
+  propertyController.searchProperties
+);
+
 
 router.delete(
   "/:id",

@@ -43,6 +43,7 @@ const upload = (0, multer_1.default)({
 });
 router.post("/", authMiddleware_1.default, upload.array("images", 5), property_controller_1.default.createProperty);
 router.get("/", property_controller_1.default.getAllProperties);
+router.get("/search", property_controller_1.default.searchProperties);
 router.delete("/:id", authMiddleware_1.default, property_controller_1.default.deleteProperty);
 // router.get("/test", (req, res) => {
 //   res.json({

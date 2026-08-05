@@ -1,5 +1,6 @@
 import api from "../api/axios";
 
+
 export const createProperty = async (formData: FormData) => {
   const response = await api.post("/property", formData, {
     headers: {
@@ -17,5 +18,14 @@ export const getAllProperties = async () => {
 
 export const deleteProperty = async (propertyId: string) => {
   const response = await api.delete(`/property/${propertyId}`);
+  return response.data;
+};
+
+
+export const searchProperties = async (filters: Record<string, string>) => {
+  const response = await api.get("/property/search", {
+    params: filters,
+  });
+
   return response.data;
 };
