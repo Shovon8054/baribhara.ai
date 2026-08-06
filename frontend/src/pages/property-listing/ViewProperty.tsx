@@ -20,6 +20,14 @@ const ViewProperty = () => {
   const [visitDate, setVisitDate] = useState("");
   const [visitTime, setVisitTime] = useState("");
   const [visitNotes, setVisitNotes] = useState("");
+  const currentUserId = (() => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user") || "null") as { id?: string } | null;
+      return user?.id;
+    } catch {
+      return undefined;
+    }
+  })();
 
   useEffect(() => {
     if (!id) {
@@ -114,6 +122,8 @@ const ViewProperty = () => {
         );
     }
     };
+
+  const isOwner = property.owner_id === currentUserId;
 
   return (
 <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
@@ -376,7 +386,7 @@ const ViewProperty = () => {
     </div>
 
     {/* Action Buttons */}
-    <div className="flex flex-wrap gap-3 mt-8">
+    {!isOwner && <div className="flex flex-wrap gap-3 mt-8">
 
         {/* add to fac button========================================================= */}
       <button
@@ -410,7 +420,7 @@ const ViewProperty = () => {
         </svg>
         Chat With Owner
       </button>
-    </div>
+    </div>}
 
     {/* =============================Ratings & Reviews section=========================== */}
     <div className="mt-10">
@@ -418,7 +428,7 @@ const ViewProperty = () => {
     </div>
 
     {/* =========================================Visit Request Modal ===================================*/}
-    {isVisitModalOpen && (
+    {!isOwner && isVisitModalOpen && (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
         <div className="bg-slate-800/95 backdrop-blur-xl rounded-2xl border border-slate-700/50 max-w-md w-full p-6 shadow-2xl animate-slideUp">
           

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { getProfile, getMyProperties } from "../../services/profile.service";
 import { deleteProperty } from "../../services/property.service";
@@ -9,7 +9,7 @@ interface User {
   name: string;
   email: string;
   phone: string;
-  role: string;
+  role: "tenant" | "owner" | string;
 }
 
 interface Property {
@@ -24,11 +24,94 @@ interface Property {
   availability: boolean;
 }
 
+type QuickAction = {
+  title: string;
+  description: string;
+  to?: string;
+  icon: "user" | "home" | "heart" | "plus" | "calendar" | "inbox" | "settings";
+};
+
+interface QuickActionCardProps {
+  action: QuickAction;
+  onNavigate: (to: string) => void;
+}
+
+const QuickActionIcon = ({ icon }: Pick<QuickAction, "icon">) => {
+  const paths: Record<QuickAction["icon"], string> = {
+    user: "M5.121 17.804A9 9 0 1118.88 17.804M15 11a3 3 0 11-6 0 3 3 0 016 0z",
+    home: "M3 21h18M5 21V9l7-6 7 6v12M9 21v-6h6v6",
+    heart: "M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z",
+    plus: "M12 4v16m8-8H4",
+    calendar: "M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z",
+    inbox: "M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4m18 0-3-3h-3l-2 3h-2l-2-3H6l-3 3m18 0V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10",
+    settings: "M12 15.5a3.5 3.5 0 100-7 3.5 3.5 0 000 7zM19.4 15a1.7 1.7 0 00.34 1.88l.06.06-2.12 2.12-.06-.06a1.7 1.7 0 00-1.88-.34 1.7 1.7 0 00-1.04 1.56v.08h-3v-.08A1.7 1.7 0 0010.66 18.7a1.7 1.7 0 00-1.88.34l-.06.06-2.12-2.12.06-.06A1.7 1.7 0 007 15.04a1.7 1.7 0 00-1.56-1.04h-.08v-3h.08A1.7 1.7 0 007 9.96a1.7 1.7 0 00-.34-1.88l-.06-.06L8.72 5.9l.06.06a1.7 1.7 0 001.88.34 1.7 1.7 0 001.04-1.56V4.66h3v.08a1.7 1.7 0 001.04 1.56 1.7 1.7 0 001.88-.34l.06-.06 2.12 2.12-.06.06a1.7 1.7 0 00-.34 1.88 1.7 1.7 0 001.56 1.04h.08v3h-.08A1.7 1.7 0 0019.4 15z",
+  };
+
+  return <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d={paths[icon]} />;
+};
+
+const QuickActionCard = ({ action, onNavigate }: QuickActionCardProps) => {
+  const isAvailable = Boolean(action.to);
+
+  return (
+    <button
+      type="button"
+      onClick={() => action.to && onNavigate(action.to)}
+      disabled={!isAvailable}
+      className="group flex w-full items-start gap-3 rounded-xl border border-slate-700/50 bg-slate-900/40 p-4 text-left transition-all duration-300 hover:border-cyan-500/40 hover:bg-slate-800/70 disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-cyan-500/10 text-cyan-400 group-hover:bg-cyan-500/20">
+        <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <QuickActionIcon icon={action.icon} />
+        </svg>
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-sm font-semibold text-white">{action.title}</span>
+        <span className="mt-0.5 block text-xs text-slate-400">{action.description}</span>
+      </span>
+      {!isAvailable && <span className="text-[10px] font-medium text-slate-500">Coming soon</span>}
+    </button>
+  );
+};
+
 const Profile = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [user, setUser] = useState<User | null>(null);
   const [properties, setProperties] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
+  const isOwner = user?.role?.toLowerCase() === "owner";
+  const activeSection = searchParams.get("section") === "properties" && isOwner
+    ? "properties"
+    : "personal";
+
+  const tenantActions: QuickAction[] = [
+    { title: "Personal Information", description: "View your profile details", to: "/profile?section=personal", icon: "user" },
+    // TODO: Navigate to the visit-bookings page when that route is implemented.
+    { title: "My Visit Bookings", description: "Track your scheduled visits", icon: "calendar" },
+    { title: "Favorites", description: "Review saved properties", to: "/favorites", icon: "heart" },
+    { title: "Add Property", description: "Create a new listing", to: "/create-property", icon: "plus" },
+    // TODO: Navigate to account settings when that route is implemented.
+    { title: "Settings", description: "Manage account preferences", icon: "settings" },
+  ];
+
+  const ownerActions: QuickAction[] = [
+    { title: "My Properties", description: "Manage your listings", to: "/profile?section=properties", icon: "home" },
+    // TODO: Navigate to the owner visit-requests page when that route is implemented.
+    { title: "Visit Requests", description: "Review tenant visit requests", icon: "inbox" },
+  ];
+
+  const quickActions = isOwner
+    ? [
+        tenantActions[0],
+        ownerActions[0],
+        tenantActions[3],
+        ownerActions[1],
+        tenantActions[1],
+        tenantActions[2],
+        tenantActions[4],
+      ]
+    : tenantActions;
 
   useEffect(() => {
     fetchProfile();
@@ -39,8 +122,10 @@ const Profile = () => {
       const profile = await getProfile();
       setUser(profile.data);
 
-      const myProperties = await getMyProperties();
-      setProperties(myProperties.data);
+      if (profile.data.role?.toLowerCase() === "owner") {
+        const myProperties = await getMyProperties();
+        setProperties(myProperties.data);
+      }
     } catch (error) {
       console.error(error);
     } finally {
@@ -73,7 +158,7 @@ const Profile = () => {
 
         {/* Profile Card */}
 
-    <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 p-4 sm:p-5 mb-6 hover:border-cyan-500/30 transition-all duration-300">
+    {activeSection === "personal" && <div className="bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 p-4 sm:p-5 mb-6 hover:border-cyan-500/30 transition-all duration-300">
         {/* Header - Compact */}
         <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-cyan-600 flex items-center justify-center text-sm font-bold text-white shadow-lg shadow-cyan-500/20 flex-shrink-0">
@@ -113,9 +198,30 @@ const Profile = () => {
                 </p>
             </div>
         </div>
-    </div>
+    </div>}
+
+        {/* Quick Actions */}
+        <section className="mb-8" aria-labelledby="quick-actions-heading">
+            <div className="mb-4 flex items-center gap-3">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500/10">
+                    <svg className="h-4 w-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.7} d="M13 3l-9 9h6v9h6v-9h6l-9-9z" />
+                    </svg>
+                </div>
+                <div>
+                    <h2 id="quick-actions-heading" className="text-lg font-semibold text-white">Quick Actions</h2>
+                    <p className="text-xs text-slate-400">Everything you need to manage your account</p>
+                </div>
+            </div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {quickActions.map((action) => (
+                    <QuickActionCard key={action.title} action={action} onNavigate={navigate} />
+                ))}
+            </div>
+        </section>
 
         {/* My Properties */}
+        {isOwner && activeSection === "properties" && <>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-lg bg-cyan-500/10 flex items-center justify-center">
@@ -291,6 +397,7 @@ const Profile = () => {
                 ))}
             </div>
         )}
+        </>}
     </div>
 </div>
   );
