@@ -14,6 +14,7 @@ import Profile from './pages/profile/Profile';
 
 import ViewProperty from './pages/property-listing/ViewProperty';
 import Favorites from './pages/favoriteAndCompare/Favorite';
+import AISearchPage from './pages/AISearchPage';
 
 
 const App = () => {
@@ -62,6 +63,7 @@ const App = () => {
           <Route path="/profile" element={<Profile />} />
           <Route path="/view-property/:id" element={<ViewProperty />} />
           <Route path="/favorites" element={<Favorites />} />
+          <Route path="/ai-search" element={<AISearchPage />} />
           {/* <Route path="/browse-properties" element={<BrowseProperties />} /> */}
         </Routes>
       </div>

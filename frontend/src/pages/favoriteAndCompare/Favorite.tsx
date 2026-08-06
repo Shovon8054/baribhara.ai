@@ -26,6 +26,7 @@ const Favorite = () => {
   const [loading, setLoading] = useState(true);
   const [loadingComparison, setLoadingComparison] = useState(false);
   const [comparison, setComparison] = useState("");
+  const [showComparisonTable, setShowComparisonTable] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>("recent");
 
   useEffect(() => {
@@ -139,6 +140,17 @@ const Favorite = () => {
                       : `Add ${2 - favorites.length} more ${favorites.length === 1 ? 'property' : 'properties'} to compare`}
                   </p>
                 </div>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowComparisonTable((isVisible) => !isVisible)}
+                    disabled={favorites.length < 2}
+                    aria-expanded={showComparisonTable}
+                    aria-controls="property-comparison-table"
+                    className="px-5 py-2.5 text-sm font-medium text-slate-200 border border-slate-600 rounded-lg hover:bg-slate-800 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {showComparisonTable ? "Hide Comparison" : "View Comparison"}
+                  </button>
                 <button
                   onClick={handleComparison}
                   disabled={loadingComparison || favorites.length < 2}
@@ -156,6 +168,7 @@ const Favorite = () => {
                     <span className="flex items-center gap-2">✨ Compare with AI</span>
                   )}
                 </button>
+                </div>
               </div>
 
               {/* Quick Stats for Comparison */}
@@ -207,8 +220,8 @@ const Favorite = () => {
             )}
 
             {/* Comparison Table - Dynamic */}
-            {favorites.length >= 2 && (
-              <div className="mt-6 bg-slate-900/50 rounded-xl border border-slate-800 overflow-hidden">
+            {favorites.length >= 2 && showComparisonTable && (
+              <div id="property-comparison-table" className="mt-6 bg-slate-900/50 rounded-xl border border-slate-800 overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
                     <thead>
