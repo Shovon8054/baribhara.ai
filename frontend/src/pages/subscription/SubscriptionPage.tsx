@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import {
     getSubscription,
     upgradeToPremium,
@@ -30,6 +31,7 @@ const SubscriptionPage = () => {
                 "Failed to load subscription:",
                 error
             );
+            toast.error("Failed to load subscription details");
         } finally {
             setLoading(false);
         }
@@ -48,9 +50,10 @@ const SubscriptionPage = () => {
 
             setSubscription(data);
 
-            alert(
-                "Premium activated successfully!"
-            );
+            toast.success("Premium activated successfully! 🎉", {
+                duration: 4000,
+                icon: '✨',
+            });
 
         } catch (error) {
             console.error(
@@ -58,9 +61,7 @@ const SubscriptionPage = () => {
                 error
             );
 
-            alert(
-                "Failed to upgrade subscription."
-            );
+            toast.error("Failed to upgrade subscription. Please try again.");
         } finally {
             setUpgrading(false);
         }
@@ -84,9 +85,9 @@ const SubscriptionPage = () => {
 
             setSubscription(data);
 
-            alert(
-                "Subscription cancelled."
-            );
+            toast.success("Subscription cancelled successfully", {
+                duration: 4000,
+            });
 
         } catch (error) {
             console.error(
@@ -94,9 +95,7 @@ const SubscriptionPage = () => {
                 error
             );
 
-            alert(
-                "Failed to cancel subscription."
-            );
+            toast.error("Failed to cancel subscription. Please try again.");
         } finally {
             setCancelling(false);
         }
@@ -104,16 +103,27 @@ const SubscriptionPage = () => {
 
     if (loading) {
         return (
-            <div className="p-8 text-center">
-                Loading subscription...
+            <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
+                <div className="flex flex-col items-center gap-3">
+                    <div className="w-8 h-8 border-2 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin"></div>
+                    <p className="text-sm text-slate-400">Loading subscription...</p>
+                </div>
             </div>
         );
     }
 
     if (!subscription) {
         return (
-            <div className="p-8 text-center">
-                Unable to load subscription.
+            <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
+                <div className="text-center">
+                    <p className="text-slate-400">Unable to load subscription.</p>
+                    <button
+                        onClick={loadSubscription}
+                        className="mt-4 px-6 py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-cyan-600 text-white text-sm font-medium hover:from-cyan-600 hover:to-cyan-700 transition-all duration-300"
+                    >
+                        Retry
+                    </button>
+                </div>
             </div>
         );
     }

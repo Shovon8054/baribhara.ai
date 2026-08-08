@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import api from "../../api/axios";
 import { getProfile } from "../../services/profile.service";
 
@@ -53,6 +54,7 @@ const EditProfile = () => {
                     "Failed to load profile:",
                     error
                 );
+                toast.error("Failed to load profile data");
             } finally {
                 setLoading(false);
             }
@@ -74,13 +76,13 @@ const EditProfile = () => {
 
         // Only allow images
         if (!file.type.startsWith("image/")) {
-            alert("Please select an image file.");
+            toast.error("Please select an image file.");
             return;
         }
 
         // 5MB limit
         if (file.size > 5 * 1024 * 1024) {
-            alert("Image must be less than 5MB.");
+            toast.error("Image must be less than 5MB.");
             return;
         }
 
@@ -120,15 +122,17 @@ const EditProfile = () => {
                 formData
             );
 
-            alert("Profile updated successfully.");
+            toast.success("Profile updated successfully! 🎉", {
+                duration: 4000,
+            });
 
             navigate("/profile");
         } catch (error: any) {
             console.error(error);
 
-            alert(
+            toast.error(
                 error.response?.data?.message ||
-                "Failed to update profile."
+                "Failed to update profile. Please try again."
             );
         } finally {
             setSaving(false);
@@ -141,8 +145,11 @@ const EditProfile = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <p>Loading profile...</p>
+            <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
+                <div className="flex flex-col items-center gap-3">
+                    <div className="w-8 h-8 border-2 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin"></div>
+                    <p className="text-sm text-slate-400">Loading profile...</p>
+                </div>
             </div>
         );
     }
@@ -248,21 +255,21 @@ const EditProfile = () => {
                                 onChange={(e) => setName(e.target.value)}
                                 required
                                 className="
-            w-full
-            pl-9 pr-4 py-2.5
-            bg-slate-900/50
-            border border-slate-700
-            rounded-lg
-            text-sm text-white
-            placeholder:text-slate-500
-            focus:outline-none
-            focus:ring-2
-            focus:ring-cyan-500/30
-            focus:border-cyan-500
-            transition-all
-            duration-200
-            hover:border-slate-600
-            "
+                                    w-full
+                                    pl-9 pr-4 py-2.5
+                                    bg-slate-900/50
+                                    border border-slate-700
+                                    rounded-lg
+                                    text-sm text-white
+                                    placeholder:text-slate-500
+                                    focus:outline-none
+                                    focus:ring-2
+                                    focus:ring-cyan-500/30
+                                    focus:border-cyan-500
+                                    transition-all
+                                    duration-200
+                                    hover:border-slate-600
+                                "
                                 placeholder="Enter your full name"
                             />
                         </div>
@@ -284,14 +291,14 @@ const EditProfile = () => {
                                 value={user?.email || ""}
                                 disabled
                                 className="
-            w-full
-            pl-9 pr-4 py-2.5
-            bg-slate-900/30
-            border border-slate-700
-            rounded-lg
-            text-sm text-slate-500
-            cursor-not-allowed
-            "
+                                    w-full
+                                    pl-9 pr-4 py-2.5
+                                    bg-slate-900/30
+                                    border border-slate-700
+                                    rounded-lg
+                                    text-sm text-slate-500
+                                    cursor-not-allowed
+                                "
                             />
                         </div>
                     </div>
@@ -312,21 +319,21 @@ const EditProfile = () => {
                                 value={phone}
                                 onChange={(e) => setPhone(e.target.value)}
                                 className="
-            w-full
-            pl-9 pr-4 py-2.5
-            bg-slate-900/50
-            border border-slate-700
-            rounded-lg
-            text-sm text-white
-            placeholder:text-slate-500
-            focus:outline-none
-            focus:ring-2
-            focus:ring-cyan-500/30
-            focus:border-cyan-500
-            transition-all
-            duration-200
-            hover:border-slate-600
-            "
+                                    w-full
+                                    pl-9 pr-4 py-2.5
+                                    bg-slate-900/50
+                                    border border-slate-700
+                                    rounded-lg
+                                    text-sm text-white
+                                    placeholder:text-slate-500
+                                    focus:outline-none
+                                    focus:ring-2
+                                    focus:ring-cyan-500/30
+                                    focus:border-cyan-500
+                                    transition-all
+                                    duration-200
+                                    hover:border-slate-600
+                                "
                                 placeholder="Enter your phone number"
                             />
                         </div>
@@ -348,14 +355,14 @@ const EditProfile = () => {
                                 value={user?.role || ""}
                                 disabled
                                 className="
-            w-full
-            pl-9 pr-4 py-2.5
-            bg-slate-900/30
-            border border-slate-700
-            rounded-lg
-            text-sm text-slate-500
-            cursor-not-allowed
-            "
+                                    w-full
+                                    pl-9 pr-4 py-2.5
+                                    bg-slate-900/30
+                                    border border-slate-700
+                                    rounded-lg
+                                    text-sm text-slate-500
+                                    cursor-not-allowed
+                                "
                             />
                         </div>
                     </div>
@@ -366,18 +373,18 @@ const EditProfile = () => {
                             type="button"
                             onClick={() => navigate("/profile")}
                             className="
-          flex-1
-          px-4 py-2.5
-          bg-slate-800/50
-          border border-slate-700
-          text-slate-300
-          text-sm font-medium
-          rounded-lg
-          hover:bg-slate-700/50
-          hover:text-white
-          transition-all
-          duration-200
-          "
+                                flex-1
+                                px-4 py-2.5
+                                bg-slate-800/50
+                                border border-slate-700
+                                text-slate-300
+                                text-sm font-medium
+                                rounded-lg
+                                hover:bg-slate-700/50
+                                hover:text-white
+                                transition-all
+                                duration-200
+                            "
                         >
                             Cancel
                         </button>
@@ -386,21 +393,21 @@ const EditProfile = () => {
                             type="submit"
                             disabled={saving}
                             className="
-          flex-1
-          px-4 py-2.5
-          bg-gradient-to-r from-cyan-500 to-indigo-500
-          text-white
-          text-sm font-medium
-          rounded-lg
-          hover:from-cyan-600 hover:to-indigo-600
-          shadow-lg shadow-cyan-500/25
-          hover:shadow-cyan-500/40
-          transition-all
-          duration-300
-          disabled:opacity-50
-          disabled:cursor-not-allowed
-          disabled:hover:shadow-lg
-          "
+                                flex-1
+                                px-4 py-2.5
+                                bg-gradient-to-r from-cyan-500 to-indigo-500
+                                text-white
+                                text-sm font-medium
+                                rounded-lg
+                                hover:from-cyan-600 hover:to-indigo-600
+                                shadow-lg shadow-cyan-500/25
+                                hover:shadow-cyan-500/40
+                                transition-all
+                                duration-300
+                                disabled:opacity-50
+                                disabled:cursor-not-allowed
+                                disabled:hover:shadow-lg
+                            "
                         >
                             {saving ? (
                                 <span className="flex items-center justify-center gap-2">
