@@ -17,10 +17,11 @@ import ViewProperty from './pages/property-listing/ViewProperty';
 import Favorites from './pages/favoriteAndCompare/Favorite';
 import AISearchPage from './pages/AISearchPage';
 
-import Subscription from './pages/subscription/Subscription';
+import Subscription from "./pages/subscription/SubscriptionPage";
 
 import ChatList from "./pages/chat/ChatList";
 import ChatPage from "./pages/chat/ChatPage";
+import SubscriptionPage from './pages/subscription/SubscriptionPage';
 
 
 const App = () => {
@@ -68,7 +69,13 @@ const App = () => {
           <Route path="/properties" element={<Properties />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/edit-profile" element={<EditProfile />} />
-          <Route path="/subscription" element={<Subscription />} />
+
+
+          <Route
+            path="/subscription"
+            element={<SubscriptionPage />}
+          />
+
 
 
           <Route path="/view-property/:id" element={<ViewProperty />} />

@@ -15,6 +15,8 @@ import comparisonRoutes from "../ai-comparison/comparison.routes.js";
 
 import chatRoutes from "../chat/chat.routes.js";
 
+import subscriptionRoutes from "../subscription/subscription.routes.js";
+
 
 
 const router = Router();
@@ -41,6 +43,11 @@ router.use("/favorites", favoriteRoutes);
 router.use("/ai", comparisonRoutes);
 
 router.use("/chat", chatRoutes);
+
+router.use(
+    "/subscription",
+    subscriptionRoutes
+);
 
 // console.log("Main routes loaded");
 
