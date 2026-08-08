@@ -11,6 +11,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const app = express();
 
+
 app.use(
   helmet({
     crossOriginResourcePolicy: {
@@ -31,7 +32,7 @@ app.use(
 
 app.use(
   "/uploads",
-  express.static(path.join(__dirname, "uploads"))
+  express.static(path.join(process.cwd(), "src/uploads"))
 );
 
 // Older seeded properties reference images that may not exist on disk.

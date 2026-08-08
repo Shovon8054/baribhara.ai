@@ -11,6 +11,7 @@ import { useLocation } from 'react-router-dom';
 
 import CreateProperty from './pages/property-listing/CreateProperty';
 import Profile from './pages/profile/Profile';
+import EditProfile from "./pages/profile/EditProfile";
 
 import ViewProperty from './pages/property-listing/ViewProperty';
 import Favorites from './pages/favoriteAndCompare/Favorite';
@@ -23,7 +24,7 @@ const App = () => {
   return (
     <>
       {/* Toaster should be at the root level for proper positioning */}
-      <Toaster 
+      <Toaster
         position="top-right"
         toastOptions={{
           duration: 3000,
@@ -49,7 +50,7 @@ const App = () => {
           },
         }}
       />
-      
+
       <div className="min-h-screen bg-slate-950 text-white">
         {!hideNavbar && <TenantNavbar />}
 
@@ -61,6 +62,8 @@ const App = () => {
           <Route path="/create-property" element={<CreateProperty />} />
           <Route path="/properties" element={<Properties />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/edit-profile" element={<EditProfile />} />
+
           <Route path="/view-property/:id" element={<ViewProperty />} />
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/ai-search" element={<AISearchPage />} />
