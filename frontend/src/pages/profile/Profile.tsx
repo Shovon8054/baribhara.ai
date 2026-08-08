@@ -245,6 +245,15 @@ const Profile = () => {
                     <h2 className="text-2xl font-bold">
                         My Properties
                     </h2>
+                    <button
+                        onClick={() => navigate('/create-property')}
+                        className="px-5 py-2.5 rounded-lg bg-gradient-to-r from-cyan-500 to-cyan-600 text-white text-sm font-medium hover:from-cyan-600 hover:to-cyan-700 shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300 flex items-center gap-2"
+                    >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                        Add Property
+                    </button>
 
                     <span className="text-gray-500">
                         {properties.length}{" "}
