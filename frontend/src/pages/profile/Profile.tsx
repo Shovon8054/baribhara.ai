@@ -160,6 +160,13 @@ const Profile = () => {
                     Edit Profile
                 </button>
 
+                <button
+                    onClick={() => navigate("/subscription")}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                >
+                    Subscribe
+                </button>
+
                 <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
 
                     {/* Profile Image */}

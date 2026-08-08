@@ -13,7 +13,7 @@ import aiRoutes from "../ai/ai.routes.js";
 import favoriteRoutes from "../favorites/favorite.routes.js";
 import comparisonRoutes from "../ai-comparison/comparison.routes.js";
 
-
+import chatRoutes from "../chat/chat.routes.js";
 
 
 
@@ -39,6 +39,8 @@ router.use("/edit-profile", editProfileRoutes);
 router.use("/property-details", detailsRoutes);
 router.use("/favorites", favoriteRoutes);
 router.use("/ai", comparisonRoutes);
+
+router.use("/chat", chatRoutes);
 
 // console.log("Main routes loaded");
 

@@ -17,6 +17,11 @@ import ViewProperty from './pages/property-listing/ViewProperty';
 import Favorites from './pages/favoriteAndCompare/Favorite';
 import AISearchPage from './pages/AISearchPage';
 
+import Subscription from './pages/subscription/Subscription';
+
+import ChatList from "./pages/chat/ChatList";
+import ChatPage from "./pages/chat/ChatPage";
+
 
 const App = () => {
   const location = useLocation();
@@ -63,10 +68,22 @@ const App = () => {
           <Route path="/properties" element={<Properties />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/edit-profile" element={<EditProfile />} />
+          <Route path="/subscription" element={<Subscription />} />
+
 
           <Route path="/view-property/:id" element={<ViewProperty />} />
           <Route path="/favorites" element={<Favorites />} />
           <Route path="/ai-search" element={<AISearchPage />} />
+
+          <Route
+            path="/chat"
+            element={<ChatList />}
+          />
+
+          <Route
+            path="/chat/:userId"
+            element={<ChatPage />}
+          />
           {/* <Route path="/browse-properties" element={<BrowseProperties />} /> */}
         </Routes>
       </div>
