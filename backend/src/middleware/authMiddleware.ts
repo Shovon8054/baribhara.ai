@@ -2,13 +2,23 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
 function parseAuthTokenFromHeader(req: Request): string | undefined {
+  const authHeader = req.headers?.authorization;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    const token = authHeader.substring(7).trim();
+    if (token && token !== "undefined" && token !== "null") {
+      return token;
+    }
+  }
+
   const cookieHeader = req.headers?.cookie;
   if (!cookieHeader) return undefined;
 
   const cookies = cookieHeader.split(";").map((c) => c.trim());
   for (const c of cookies) {
     const [k, v] = c.split("=");
-    if (k === "auth_token") return v;
+    if (k === "auth_token" && v && v !== "undefined" && v !== "null") {
+      return v;
+    }
   }
 
   return undefined;

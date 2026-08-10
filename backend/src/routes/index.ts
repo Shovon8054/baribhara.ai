@@ -17,6 +17,11 @@ import chatRoutes from "../chat/chat.routes.js";
 
 import subscriptionRoutes from "../subscription/subscription.routes.js";
 
+// admin
+import adminUserRoutes from "../admin/users/adminUser.routes.js";
+import adminPropertyRoutes
+    from "../admin/properties/adminProperty.routes.js";
+
 
 
 const router = Router();
@@ -47,6 +52,13 @@ router.use("/chat", chatRoutes);
 router.use(
     "/subscription",
     subscriptionRoutes
+);
+
+
+router.use("/admin/users", adminUserRoutes);
+router.use(
+    "/admin/properties",
+    adminPropertyRoutes
 );
 
 // console.log("Main routes loaded");

@@ -19,6 +19,7 @@ export async function login(req: Request, res: Response) {
       message: "Login successful",
       data: {
         user: result.user,
+        accessToken: result.accessToken,
       },
     });
   } catch (error) {

@@ -6,7 +6,7 @@ import SignIn from './pages/signin/SignIn';
 import SignUp from './pages/signin/SignUp';
 // import DemoPage from './pages/DemoPage';
 import Properties from './pages/property-listing/Properties';
-import TenantNavbar from './navbar';
+import { TenantNavbar, AdminNavbar } from './navbar';
 import { useLocation } from 'react-router-dom';
 
 import CreateProperty from './pages/property-listing/CreateProperty';
@@ -23,10 +23,28 @@ import ChatList from "./pages/chat/ChatList";
 import ChatPage from "./pages/chat/ChatPage";
 import SubscriptionPage from './pages/subscription/SubscriptionPage';
 
+// admin
+import AdminDashboard from './pages/admin/AdminDashboard';
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminProperties from "./pages/admin/AdminProperties";
+
 
 const App = () => {
   const location = useLocation();
   const hideNavbar = location.pathname === '/' || location.pathname === '/signin' || location.pathname === '/signup';
+
+  const isAdminRoute = location.pathname.startsWith('/admin') || location.pathname === '/admin-dashboard';
+
+  let userRole = null;
+  const storedUser = localStorage.getItem("user");
+  if (storedUser) {
+    try {
+      userRole = JSON.parse(storedUser)?.role;
+    } catch { }
+  }
+
+  const showAdminNavbar = isAdminRoute || userRole === "ADMIN";
+
   return (
     <>
       {/* Toaster should be at the root level for proper positioning */}
@@ -58,7 +76,7 @@ const App = () => {
       />
 
       <div className="min-h-screen bg-slate-950 text-white">
-        {!hideNavbar && <TenantNavbar />}
+        {!hideNavbar && (showAdminNavbar ? <AdminNavbar /> : <TenantNavbar />)}
 
         <Routes>
           <Route path="/" element={<SignIn />} />
@@ -90,6 +108,22 @@ const App = () => {
           <Route
             path="/chat/:userId"
             element={<ChatPage />}
+          />
+
+          {/* admin section */}
+          <Route
+            path="/admin-dashboard"
+            element={<AdminDashboard />}
+          />
+
+          <Route
+            path="/admin/users"
+            element={<AdminUsers />}
+          />
+
+          <Route
+            path="/admin/properties"
+            element={<AdminProperties />}
           />
           {/* <Route path="/browse-properties" element={<BrowseProperties />} /> */}
         </Routes>

@@ -15,6 +15,10 @@ class SignInService {
 
     const user = result.rows[0];
 
+    if (!user.is_active) {
+      throw new Error("Your account has been blocked. Please contact support.");
+    }
+
     const isPasswordMatch = await bcrypt.compare(password, user.password);
 
     if (!isPasswordMatch) {

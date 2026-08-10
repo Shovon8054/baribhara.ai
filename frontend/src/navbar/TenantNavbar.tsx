@@ -1,35 +1,104 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { logoutUser } from '../services/auth.service';
-import { useEffect, useState } from 'react';
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { logoutUser } from "../services/auth.service";
+import { useEffect, useState } from "react";
 
 const TenantNavbar = () => {
   const navigate = useNavigate();
-  const [isAuth, setIsAuth] = useState(false);
+  const location = useLocation();
+
+  const [user, setUser] = useState<any>(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        return JSON.parse(storedUser);
+      } catch (error) {
+        console.error("Invalid user data");
+        return null;
+      }
+    }
+    return null;
+  });
+
+  const [isAuth, setIsAuth] = useState<boolean>(() => {
+    return Boolean(
+      localStorage.getItem("accessToken") ||
+      localStorage.getItem("user")
+    );
+  });
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    const check = Boolean(localStorage.getItem('accessToken') || localStorage.getItem('user'));
+
+    const storedUser = localStorage.getItem("user");
+
+    if (storedUser) {
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error("Invalid user data");
+        setUser(null);
+      }
+    } else {
+      setUser(null);
+    }
+
+    const check = Boolean(
+      localStorage.getItem("accessToken") ||
+      localStorage.getItem("user")
+    );
+
     setIsAuth(check);
 
-    const onStorage = () => setIsAuth(Boolean(localStorage.getItem('accessToken') || localStorage.getItem('user')));
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
-  }, []);
+    const onStorage = () => {
+
+      const userData = localStorage.getItem("user");
+
+      if (userData) {
+        try {
+          setUser(JSON.parse(userData));
+        } catch {
+          setUser(null);
+        }
+      } else {
+        setUser(null);
+      }
+
+      setIsAuth(
+        Boolean(
+          localStorage.getItem("accessToken") ||
+          localStorage.getItem("user")
+        )
+      );
+    };
+
+    window.addEventListener("storage", onStorage);
+
+    return () => {
+      window.removeEventListener("storage", onStorage);
+    };
+
+  }, [location.pathname]);
 
   const handleLogout = async () => {
+
     try {
       await logoutUser();
     } catch (error) {
-      console.error('Logout failed', error);
+      console.error("Logout failed", error);
     }
 
-    // Clear local client state
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('user');
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("user");
 
+    setUser(null);
     setIsAuth(false);
-    navigate('/signin');
+
+    navigate("/signin");
   };
+
+
+  // =================tenant/owner=============================
 
   return (
     <>
