@@ -27,6 +27,8 @@ import SubscriptionPage from './pages/subscription/SubscriptionPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminProperties from "./pages/admin/AdminProperties";
+import AdminSubscriptions
+  from "./pages/admin/AdminSubscriptions";
 
 
 const App = () => {
@@ -124,6 +126,11 @@ const App = () => {
           <Route
             path="/admin/properties"
             element={<AdminProperties />}
+          />
+
+          <Route
+            path="/admin/subscriptions"
+            element={<AdminSubscriptions />}
           />
           {/* <Route path="/browse-properties" element={<BrowseProperties />} /> */}
         </Routes>

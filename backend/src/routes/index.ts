@@ -22,6 +22,9 @@ import adminUserRoutes from "../admin/users/adminUser.routes.js";
 import adminPropertyRoutes
     from "../admin/properties/adminProperty.routes.js";
 
+import adminSubscriptionRoutes
+    from "../admin/subscriptions/adminSubscription.routes.js";
+
 
 
 const router = Router();
@@ -59,6 +62,11 @@ router.use("/admin/users", adminUserRoutes);
 router.use(
     "/admin/properties",
     adminPropertyRoutes
+);
+
+router.use(
+    "/admin/subscriptions",
+    adminSubscriptionRoutes
 );
 
 // console.log("Main routes loaded");
