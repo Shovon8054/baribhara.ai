@@ -26,6 +26,8 @@ CREATE TABLE users (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE users
+ADD COLUMN profile_image TEXT;
 -- ============================================
 -- TABLE 2: properties (Feature 2: Listing Management)
 -- ============================================
