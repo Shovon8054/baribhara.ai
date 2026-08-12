@@ -6,27 +6,7 @@ import {
     ChatUser,
 } from "../../services/chat.service";
 
-const API_URL =
-    import.meta.env.VITE_API_URL ||
-    "http://localhost:8081/api";
-
-const getImageUrl = (
-    image: string | null
-) => {
-
-    if (!image) {
-        return null;
-    }
-
-    if (image.startsWith("http")) {
-        return image;
-    }
-
-    const backendUrl =
-        API_URL.replace("/api", "");
-
-    return `${backendUrl}${image}`;
-};
+import { getImageUrl } from "../../utils/imageUrl";
 
 const ChatList = () => {
 

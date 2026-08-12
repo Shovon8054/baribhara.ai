@@ -19,6 +19,7 @@ import {
 } from "../../services/chat.service";
 
 import api from "../../api/axios";
+import { BACKEND_URL } from "../../utils/imageUrl";
 
 
 // =====================================
@@ -41,7 +42,8 @@ interface ChatUser {
 
 const SOCKET_URL =
     import.meta.env.VITE_SOCKET_URL ||
-    (typeof window !== "undefined" ? window.location.origin : "http://localhost:8081");
+    BACKEND_URL ||
+    window.location.origin;
 
 
 // =====================================
@@ -703,32 +705,15 @@ const ChatPage = () => {
 
     const getProfileImage = () => {
 
-        if (
-            !chatUser?.profile_image
-        ) {
+        if (!chatUser?.profile_image) {
             return null;
         }
 
-        if (
-            chatUser.profile_image
-                .startsWith("http")
-        ) {
-
+        if (chatUser.profile_image.startsWith("http")) {
             return chatUser.profile_image;
         }
 
-        const apiUrl =
-            import.meta.env
-                .VITE_API_URL ||
-            "http://localhost:8081/api";
-
-        const backendUrl =
-            apiUrl.replace(
-                "/api",
-                ""
-            );
-
-        return `${backendUrl}${chatUser.profile_image}`;
+        return `${BACKEND_URL}${chatUser.profile_image}`;
     };
 
 

@@ -4,6 +4,7 @@ import { getPropertyDetails } from "../../services/propertyDetails.service";
 import { PropertyDetails } from "../../types/property";
 import { addToFavorites } from "../../services/favorite.service";
 import Review from "../../components/Review";
+import { getImageUrl } from "../../utils/imageUrl";
 
 import toast from "react-hot-toast";
 
@@ -44,7 +45,7 @@ const ViewProperty = () => {
       const data = await getPropertyDetails(id);
       setProperty(data);
       if (data.images && data.images.length > 0) {
-        setSelectedImage(`http://localhost:8081${data.images[0]}`);
+        setSelectedImage(getImageUrl(data.images[0]));
       }
     } catch (err) {
       console.error("Error fetching property:", err);
@@ -192,14 +193,14 @@ const ViewProperty = () => {
               {property.images.map((img, index) => (
                 <button
                   key={img || index}
-                  onClick={() => setSelectedImage(`http://localhost:8081${img}`)}
-                  className={`flex-shrink-0 w-16 h-14 rounded-lg overflow-hidden border-2 transition-all duration-300 ${selectedImage === `http://localhost:8081${img}`
+                  onClick={() => setSelectedImage(getImageUrl(img))}
+                  className={`flex-shrink-0 w-16 h-14 rounded-lg overflow-hidden border-2 transition-all duration-300 ${selectedImage === getImageUrl(img)
                     ? 'border-cyan-400 shadow-lg shadow-cyan-500/40 scale-105'
                     : 'border-transparent hover:border-slate-400 hover:scale-105'
                     }`}
                 >
                   <img
-                    src={`http://localhost:8081${img}`}
+                    src={getImageUrl(img)}
                     alt={`Property ${index + 1}`}
                     className="w-full h-full object-cover"
                   />

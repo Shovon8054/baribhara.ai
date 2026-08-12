@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { getImageUrl } from "../../utils/imageUrl";
 import {
     getProfile,
     getMyProperties,
@@ -199,7 +200,7 @@ const Profile = () => {
                                 <div className="w-32 h-32 rounded-full overflow-hidden border-4 border-cyan-500/30 shadow-xl shadow-cyan-500/10">
                                     {user?.profile_image ? (
                                         <img
-                                            src={`http://localhost:8081${user.profile_image}`}
+                                            src={getImageUrl(user.profile_image)}
                                             alt={user?.name || "Profile"}
                                             className="w-full h-full object-cover"
                                         />
@@ -357,7 +358,7 @@ const Profile = () => {
                                     <div className="relative overflow-hidden h-52 sm:h-56 bg-slate-900/50">
                                         {property.images?.length > 0 ? (
                                             <img
-                                                src={`http://localhost:8081${property.images[0]}`}
+                                                src={getImageUrl(property.images[0])}
                                                 alt={property.title}
                                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-600"
                                             />

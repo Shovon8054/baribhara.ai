@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { aiSearch } from "../services/ai.service";
+import { getImageUrl } from "../utils/imageUrl";
 
 interface Property {
   id: string;
@@ -228,11 +229,11 @@ const AISearch = () => {
                 >
                     <div className="relative overflow-hidden h-56 sm:h-64">
                         <img
-                            src={property.images?.[0] || "/uploads/properties/image-unavailable.svg"}
+                            src={getImageUrl(property.images?.[0])} 
                             alt={property.title}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                             onError={(event) => {
-                                event.currentTarget.src = "/uploads/properties/image-unavailable.svg";
+                                event.currentTarget.src = getImageUrl(null);
                             }}
                         />
                         <div className="absolute top-3 right-3 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white px-3 py-1 rounded-lg text-sm font-semibold shadow-lg shadow-cyan-500/30">

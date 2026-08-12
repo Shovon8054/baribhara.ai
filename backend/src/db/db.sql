@@ -43,6 +43,14 @@ CREATE TABLE properties (
     latitude DECIMAL(10, 8),
     longitude DECIMAL(11, 8),
     property_type VARCHAR(50) CHECK (property_type IN ('APARTMENT', 'HOUSE', 'FLAT', 'STUDIO', 'PENTHOUSE', 'DUPLEX')),
+    furnished BOOLEAN DEFAULT FALSE,
+    family_bachelor VARCHAR(20) DEFAULT 'ANY' CHECK (family_bachelor IN ('FAMILY', 'BACHELOR', 'ANY')),
+    parking BOOLEAN DEFAULT FALSE,
+    lift BOOLEAN DEFAULT FALSE,
+    pet_friendly BOOLEAN DEFAULT FALSE,
+    availability BOOLEAN DEFAULT TRUE,
+    views INTEGER DEFAULT 0,
+    favorites_count INTEGER DEFAULT 0,
     amenities TEXT[] DEFAULT '{}',
     nearby_facilities TEXT[] DEFAULT '{}',
     images TEXT[] DEFAULT '{}',
@@ -296,12 +304,8 @@ CREATE INDEX idx_reviews_user_id ON reviews(user_id);
 CREATE INDEX idx_reviews_property_id ON reviews(property_id);
 CREATE INDEX idx_maintenance_tenant_id ON maintenance(tenant_id);
 CREATE INDEX idx_maintenance_status ON maintenance(status);
-CREATE INDEX idx_leases_tenant_id ON leases(tenant_id);
-CREATE INDEX idx_leases_status ON leases(status);
 CREATE INDEX idx_subscriptions_user_id ON subscriptions(user_id);
 CREATE INDEX idx_subscriptions_plan ON subscriptions(plan);
-CREATE INDEX idx_notifications_user_id ON notifications(user_id);
-CREATE INDEX idx_notifications_is_read ON notifications(is_read);
 
 -- Full text search for AI search
 CREATE INDEX idx_properties_search ON properties USING GIN(to_tsvector('english', title || ' ' || COALESCE(description, '')));
@@ -323,7 +327,6 @@ CREATE TRIGGER update_properties_updated_at BEFORE UPDATE ON properties FOR EACH
 CREATE TRIGGER update_bookings_updated_at BEFORE UPDATE ON bookings FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 CREATE TRIGGER update_reviews_updated_at BEFORE UPDATE ON reviews FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 CREATE TRIGGER update_maintenance_updated_at BEFORE UPDATE ON maintenance FOR EACH ROW EXECUTE FUNCTION update_updated_at();
-CREATE TRIGGER update_leases_updated_at BEFORE UPDATE ON leases FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 CREATE TRIGGER update_subscriptions_updated_at BEFORE UPDATE ON subscriptions FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 CREATE TRIGGER update_saved_searches_updated_at BEFORE UPDATE ON saved_searches FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
@@ -366,10 +369,6 @@ INSERT INTO reviews (id, rating, comment, user_id, property_id) VALUES
 -- Sample Subscription
 INSERT INTO subscriptions (id, user_id, plan, is_active, expires_at) VALUES 
     (uuid_generate_v4(), (SELECT id FROM users WHERE email = 'owner@bashabhara.com'), 'PREMIUM', TRUE, CURRENT_TIMESTAMP + INTERVAL '30 days');
-
--- Sample Notification
-INSERT INTO notifications (id, user_id, type, title, message) VALUES 
-    (uuid_generate_v4(), (SELECT id FROM users WHERE email = 'owner@bashabhara.com'), 'BOOKING', 'New Visit Request', 'A tenant wants to visit your property');
 
 CREATE INDEX idx_rental_requirements_user_id
 ON rental_requirements(user_id);

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllProperties, searchProperties } from "../../services/property.service";
 import SearchFilter from "../../components/SearchFilter";
+import { getImageUrl } from "../../utils/imageUrl";
 
 interface Property {
   id: string;
@@ -50,16 +51,6 @@ const Properties = () => {
     }
   };
 
-  const getImageSrc = (image?: string) => {
-    if (!image) return "/uploads/properties/image-unavailable.svg";
-    if (image.startsWith("http://") || image.startsWith("https://") || image.startsWith("data:")) {
-      return image;
-    }
-    if (image.startsWith("/uploads")) {
-      return image;
-    }
-    return image.startsWith("/") ? image : `/uploads/properties/${image}`;
-  };
 
   if (loading) {
     return (
@@ -145,7 +136,7 @@ const Properties = () => {
                 {/* Image */}
                 <div className="relative overflow-hidden h-56 sm:h-64">
                   <img
-                    src={getImageSrc(property.images?.[0])}
+                    src={getImageUrl(property.images?.[0])}
                     alt={property.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     onError={(e) => {

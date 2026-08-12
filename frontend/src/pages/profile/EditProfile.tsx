@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import api from "../../api/axios";
 import { getProfile } from "../../services/profile.service";
+import { getImageUrl } from "../../utils/imageUrl";
 
 interface User {
     name: string;
@@ -43,11 +44,8 @@ const EditProfile = () => {
 
                 setName(data.name || "");
                 setPhone(data.phone || "");
-
                 if (data.profile_image) {
-                    setPreview(
-                        `http://localhost:8081${data.profile_image}`
-                    );
+                    setPreview(getImageUrl(data.profile_image));
                 }
             } catch (error) {
                 console.error(

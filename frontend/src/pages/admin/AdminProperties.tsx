@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { getImageUrl } from "../../utils/imageUrl";
 
 import {
     getAdminProperties,
@@ -225,7 +226,7 @@ const AdminProperties = () => {
                                 <div className="relative overflow-hidden h-52 bg-slate-900/50">
                                     {property.images && property.images.length > 0 ? (
                                         <img
-                                            src={`http://localhost:8081${property.images[0]}`}
+                                            src={getImageUrl(property.images[0])}
                                             alt={property.title}
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-600"
                                         />
