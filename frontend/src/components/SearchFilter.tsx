@@ -60,7 +60,7 @@ const SearchFilter = ({ onSearch }: Props) => {
 
   return (
     <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl border border-slate-700/50 p-5 sm:p-6 hover:border-cyan-500/30 transition-all duration-300">
-      
+
       {/* Header */}
       <div className="flex items-center gap-2 mb-4">
         <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -73,7 +73,7 @@ const SearchFilter = ({ onSearch }: Props) => {
 
       {/* Filter Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-        
+
         {/* Location */}
         <input
           name="location"
@@ -231,7 +231,7 @@ const SearchFilter = ({ onSearch }: Props) => {
         </select>
 
         {/* Tenant Type */}
-        <select
+        {/* <select
           name="family_bachelor"
           value={filters.family_bachelor}
           className="
@@ -257,10 +257,10 @@ const SearchFilter = ({ onSearch }: Props) => {
           <option value="FAMILY" className="bg-slate-900">👨‍👩‍👧‍👦 Family</option>
           <option value="BACHELOR" className="bg-slate-900">👤 Bachelor</option>
           <option value="ANY" className="bg-slate-900">🔄 Any</option>
-        </select>
+        </select> */}
 
         {/* Parking */}
-        <select
+        {/* <select
           name="parking"
           value={filters.parking}
           className="
@@ -285,10 +285,10 @@ const SearchFilter = ({ onSearch }: Props) => {
           <option value="" className="bg-slate-900">Parking</option>
           <option value="true" className="bg-slate-900">✅ Yes</option>
           <option value="false" className="bg-slate-900">❌ No</option>
-        </select>
+        </select> */}
 
         {/* Lift */}
-        <select
+        {/* <select
           name="lift"
           value={filters.lift}
           className="
@@ -313,10 +313,10 @@ const SearchFilter = ({ onSearch }: Props) => {
           <option value="" className="bg-slate-900">Lift</option>
           <option value="true" className="bg-slate-900">✅ Yes</option>
           <option value="false" className="bg-slate-900">❌ No</option>
-        </select>
+        </select> */}
 
         {/* Pet Friendly */}
-        <select
+        {/* <select
           name="pet_friendly"
           value={filters.pet_friendly}
           className="
@@ -341,7 +341,7 @@ const SearchFilter = ({ onSearch }: Props) => {
           <option value="" className="bg-slate-900">Pet Friendly</option>
           <option value="true" className="bg-slate-900">🐾 Yes</option>
           <option value="false" className="bg-slate-900">🚫 No</option>
-        </select>
+        </select> */}
 
         {/* Sort */}
         <select
@@ -401,7 +401,7 @@ const SearchFilter = ({ onSearch }: Props) => {
           </svg>
           Search
         </button>
-        
+
         <button
           onClick={handleReset}
           className="
