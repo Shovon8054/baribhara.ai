@@ -74,8 +74,11 @@ app.get('/health', (_req: Request, res: Response) => {
   res.status(200).json({ status: 'ok', service: 'baribhara-api' });
 });
 
-app.get('/', (_req: Request, res: Response) => {
-  res.status(200).json({ message: 'BariBhara API is running' });
+app.use((err: any, _req: Request, res: Response, _next: express.NextFunction) => {
+  console.error("Global Error Handler:", err);
+  const status = err.status || err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  res.status(status).json({ status: "error", message });
 });
 
 export default app;

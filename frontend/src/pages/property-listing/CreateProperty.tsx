@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createProperty } from "../../services/property.service";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 import AIListingAssistant from "../../components/AIListingAssistant";
 
@@ -53,7 +54,16 @@ const CreateProperty = () => {
         e: React.ChangeEvent<HTMLInputElement>
     ) => {
         if (e.target.files) {
-            setImages(e.target.files);
+            if (e.target.files.length > 5) {
+                toast.error("Maximum 5 images allowed. Only the first 5 images were kept.");
+                const dt = new DataTransfer();
+                for (let i = 0; i < 5; i++) {
+                    dt.items.add(e.target.files[i]);
+                }
+                setImages(dt.files);
+            } else {
+                setImages(e.target.files);
+            }
         }
     };
 
@@ -66,9 +76,14 @@ const CreateProperty = () => {
             for (const f of requiredNums) {
                 const v = (property as any)[f];
                 if (v === "" || v === undefined || isNaN(Number(v))) {
-                    alert(`Please provide a valid numeric value for ${f}`);
+                    toast.error(`Please provide a valid numeric value for ${f}`);
                     return;
                 }
+            }
+
+            if (images && images.length > 5) {
+                toast.error("Maximum 5 images allowed.");
+                return;
             }
 
             const formData = new FormData();
@@ -88,18 +103,16 @@ const CreateProperty = () => {
 
             console.log(data);
 
-            // alert("Property created successfully!");
+            toast.success("Property created successfully!");
             navigate("/properties");
 
         } catch (error: any) {
-            console.log(error);
-
-            if (error.response) {
-                console.log(error.response.data);
-                alert(error.response.data.message);
-            } else {
-                alert(error.message);
-            }
+            console.error(error);
+            const serverMsg =
+                error.response?.data?.message ||
+                (typeof error.response?.data === "string" ? "Server error occurred" : error.message) ||
+                "Failed to create property";
+            toast.error(serverMsg);
         }
     };
 
@@ -568,7 +581,11 @@ const CreateProperty = () => {
                                     <p className="text-[10px] font-medium text-slate-400 group-hover:text-slate-300 transition-colors duration-200">
                                         <span className="text-cyan-400 font-semibold">Upload</span>
                                     </p>
-                                    <p className="text-[8px] text-slate-500">PNG, JPG (Max 5MB)</p>
+                                    <p className="text-[8px] text-slate-500">
+                                        {images && images.length > 0
+                                            ? `Selected ${images.length} of max 5 images`
+                                            : "PNG, JPG (Max 5MB each, max 5 images)"}
+                                    </p>
                                 </div>
                                 <input
                                     type="file"

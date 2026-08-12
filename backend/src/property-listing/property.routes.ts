@@ -54,10 +54,41 @@ const upload = multer({
 });
 
 
+import { Request, Response, NextFunction } from "express";
+
+const handleUpload = (req: Request, res: Response, next: NextFunction) => {
+  upload.array("images", 5)(req, res, (err: any) => {
+    if (err instanceof multer.MulterError) {
+      if (err.code === "LIMIT_UNEXPECTED_FILE") {
+        return res.status(400).json({
+          status: "fail",
+          message: "Maximum 5 images allowed.",
+        });
+      }
+      if (err.code === "LIMIT_FILE_SIZE") {
+        return res.status(400).json({
+          status: "fail",
+          message: "Each image size cannot exceed 5MB.",
+        });
+      }
+      return res.status(400).json({
+        status: "fail",
+        message: err.message,
+      });
+    } else if (err) {
+      return res.status(400).json({
+        status: "fail",
+        message: err.message || "File upload error",
+      });
+    }
+    next();
+  });
+};
+
 router.post(
   "/",
   requireAuth,
-  upload.array("images", 5),
+  handleUpload,
   propertyController.createProperty
 );
 
