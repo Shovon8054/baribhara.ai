@@ -114,9 +114,9 @@ const SignIn = () => {
               <label className="block text-sm font-medium text-slate-300">
                 Password <span className="text-red-400">*</span>
               </label>
-              <a href="#" className="text-xs text-cyan-400 hover:text-cyan-300 hover:underline font-medium transition-colors duration-200">
+              {/* <a href="#" className="text-xs text-cyan-400 hover:text-cyan-300 hover:underline font-medium transition-colors duration-200">
                 Forgot password?
-              </a>
+              </a> */}
             </div>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
