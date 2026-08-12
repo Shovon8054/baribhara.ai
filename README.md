@@ -22,9 +22,9 @@
 
 ### 🤖 1. AI Natural Language Property Search
 Say goodbye to complex filter forms. Tenants can express what they are looking for in natural, everyday language:
-> *"Need a 3-bedroom family apartment under 25k in Dhanmondi with parking and lift."*
+> *"Need a 3-bedroom family apartment under 25k in Dhanmondi."*
 
-- **Gemini AI Query Intelligence:** Extracts budget constraints, desired locations, bedroom/bathroom counts, tenant suitability (Family/Bachelor), and required amenities in real-time.
+- **Gemini AI Query Intelligence:** Extracts budget constraints, desired locations, bedroom/bathroom counts, tenant suitability and required amenities in real-time.
 - **Raw SQL Conversion:** Seamlessly translates structured AI outputs into optimized, paramaterized PostgreSQL queries with a resilient regex fallback engine.
 
 ---
@@ -42,7 +42,6 @@ Direct, friction-free communication between property owners and prospective tena
 Allows landlords and property owners to publish high-converting listings in seconds:
 - **Automated Copywriting:** Generates rich, professional property descriptions and catchy titles based on basic specs.
 - **Listing Optimization:** Identifies missing details and suggests high-impact improvements to boost conversion.
-- **Bilingual Translation:** One-click instant translation between **English ↔ Bangla** tailored for the local Bangladesh rental market.
 
 ---
 
@@ -223,11 +222,6 @@ For quick platform testing:
 |---|---|---|
 | 👑 Admin | `admin@baribhara.ai` | `Admin1234` |
 
----
-
-## 📝 License
-
-Distributed under the **MIT License**.
 
 ---
 
