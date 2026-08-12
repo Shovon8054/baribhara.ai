@@ -334,9 +334,10 @@ CREATE TRIGGER update_saved_searches_updated_at BEFORE UPDATE ON saved_searches 
 -- INSERT SAMPLE DATA (For Testing)
 -- ============================================
 
--- Admin (password: password123)
-INSERT INTO users (id, email, password, full_name, role, is_verified) VALUES 
-    (uuid_generate_v4(), 'admin@bashabhara.com', '$2a$10$N9qo8uLOickgx2ZMRZoMy.MrAJqJ6Qn5JqC5n5X9qo8uLOickgx2Z', 'Admin', 'ADMIN', TRUE);
+-- Admin (email: admin@baribhara.ai, password: Admin1234)
+INSERT INTO users (id, email, password, full_name, role, is_verified, is_active) VALUES 
+    (uuid_generate_v4(), 'admin@baribhara.ai', '$2a$10$jD5RoNxGijFfK88JSqFkd.ApGZ19wdaW/AXpc5ix3I/AKqK.lm7Uu', 'Admin', 'ADMIN', TRUE, TRUE)
+ON CONFLICT (email) DO UPDATE SET password = '$2a$10$jD5RoNxGijFfK88JSqFkd.ApGZ19wdaW/AXpc5ix3I/AKqK.lm7Uu', role = 'ADMIN';
 
 -- Owner
 INSERT INTO users (id, email, password, full_name, phone, role, is_verified) VALUES 

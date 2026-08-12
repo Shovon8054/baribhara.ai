@@ -120,6 +120,34 @@ const startServer = (
 // DATABASE
 // =====================================
 
+import bcrypt from "bcryptjs";
+
+const ensureAdminUser = async () => {
+  try {
+    const email = "admin@baribhara.ai";
+    const password = "Admin1234";
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const checkRes = await pool.query("SELECT id FROM users WHERE email = $1", [email]);
+    if (checkRes.rows.length === 0) {
+      await pool.query(
+        `INSERT INTO users (email, password, full_name, role, is_verified, is_active)
+         VALUES ($1, $2, 'BashaBhara Admin', 'ADMIN', true, true)`,
+        [email, hashedPassword]
+      );
+      console.log("Admin user admin@baribhara.ai created successfully.");
+    } else {
+      await pool.query(
+        `UPDATE users SET password = $1, role = 'ADMIN', is_verified = true, is_active = true WHERE email = $2`,
+        [hashedPassword, email]
+      );
+      console.log("Admin user admin@baribhara.ai password updated successfully.");
+    }
+  } catch (err) {
+    console.error("Failed to ensure admin user:", err);
+  }
+};
+
 const initializeApp =
   async () => {
     try {
@@ -135,6 +163,8 @@ const initializeApp =
       console.log(
         "DB connected successfully"
       );
+
+      await ensureAdminUser();
 
       startServer(
         BASE_PORT
