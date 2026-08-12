@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllProperties, searchProperties } from "../../services/property.service";
 import SearchFilter from "../../components/SearchFilter";
-import { getImageUrl } from "../../utils/imageUrl";
+import { getImageUrl, DEFAULT_FALLBACK_IMAGE } from "../../utils/imageUrl";
 
 interface Property {
   id: string;
@@ -141,7 +141,7 @@ const Properties = () => {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
-                      target.src = "/uploads/properties/image-unavailable.svg";
+                      target.src = DEFAULT_FALLBACK_IMAGE;
                     }}
                   />
                   <div className="absolute top-3 right-3 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white px-3 py-1 rounded-lg text-sm font-semibold shadow-lg shadow-cyan-500/30">

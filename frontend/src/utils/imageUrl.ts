@@ -8,15 +8,24 @@ export const BACKEND_URL = API_URL.endsWith("/api")
   : "";
 
 export const getImageUrl = (path?: string | null): string => {
-  if (!path) return "/uploads/properties/image-unavailable.svg";
-  if (path.startsWith("http://") || path.startsWith("https://")) return path;
+  const fallbackPath = "/uploads/properties/image-unavailable.svg";
+  const targetPath = path || fallbackPath;
   
-  const cleanPath = path.startsWith("/") ? path : `/${path}`;
+  if (
+    targetPath.startsWith("http://") ||
+    targetPath.startsWith("https://") ||
+    targetPath.startsWith("data:")
+  ) {
+    return targetPath;
+  }
   
-  // If path starts with /uploads and BACKEND_URL exists, prepend BACKEND_URL
-  if (cleanPath.startsWith("/uploads")) {
+  const cleanPath = targetPath.startsWith("/") ? targetPath : `/${targetPath}`;
+  
+  if (BACKEND_URL) {
     return `${BACKEND_URL}${cleanPath}`;
   }
   
   return cleanPath;
 };
+
+export const DEFAULT_FALLBACK_IMAGE = getImageUrl(null);
