@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { compareProperties } from "../../services/comparison.service";
 import { getFavorites, removeFavorite } from "../../services/favorite.service";
+import { getImageUrl, DEFAULT_FALLBACK_IMAGE } from "../../utils/imageUrl";
 
 interface FavoriteProperty {
   id: string;
@@ -287,10 +288,10 @@ const Favorite = () => {
                   {/* Image */}
                   <div className="relative h-48 bg-slate-800 overflow-hidden">
                     <img
-                      src={property.images?.[0] || '/placeholder.jpg'}
+                      src={getImageUrl(property.images?.[0])}
                       alt={property.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                      onError={(e) => { (e.target as HTMLImageElement).src = '/placeholder.jpg'; }}
+                      onError={(e) => { (e.target as HTMLImageElement).src = DEFAULT_FALLBACK_IMAGE; }}
                     />
                     <div className="absolute top-3 right-3 bg-black/70 px-3 py-1 rounded-lg text-sm font-semibold text-white">
                       ৳ {Number(property.price).toLocaleString()}
