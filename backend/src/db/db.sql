@@ -51,6 +51,81 @@ CREATE TABLE properties (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE rental_requirements (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+
+    user_id UUID UNIQUE NOT NULL
+        REFERENCES users(id) ON DELETE CASCADE,
+
+    max_price DECIMAL(12, 2),
+
+    location TEXT,
+
+    bedrooms INTEGER,
+
+    bathrooms INTEGER,
+
+    min_area DECIMAL(10, 2),
+
+    property_type VARCHAR(50)
+        CHECK (
+            property_type IS NULL OR
+            property_type IN (
+                'APARTMENT',
+                'HOUSE',
+                'FLAT',
+                'STUDIO',
+                'PENTHOUSE',
+                'DUPLEX'
+            )
+        ),
+
+    amenities TEXT[] DEFAULT '{}',
+
+    nearby_facilities TEXT[] DEFAULT '{}',
+
+    is_active BOOLEAN DEFAULT TRUE,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+CREATE TABLE ai_rental_chats (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+
+    user_id UUID NOT NULL
+        REFERENCES users(id) ON DELETE CASCADE,
+
+    role VARCHAR(20) NOT NULL
+        CHECK (role IN ('USER', 'AI')),
+
+    message TEXT NOT NULL,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE property_match_notifications (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+
+    user_id UUID NOT NULL
+        REFERENCES users(id) ON DELETE CASCADE,
+
+    property_id UUID NOT NULL
+        REFERENCES properties(id) ON DELETE CASCADE,
+
+    match_score DECIMAL(5,2) NOT NULL,
+
+    email_sent BOOLEAN DEFAULT FALSE,
+
+    sent_at TIMESTAMP,
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    UNIQUE(user_id, property_id)
+);
+
 -- ============================================
 -- TABLE 3: bookings (Feature 6: Visit Booking)
 -- ============================================
@@ -131,24 +206,6 @@ CREATE TABLE maintenance (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- ============================================
--- TABLE 9: leases (Feature 13: Digital Lease)
--- ============================================
-CREATE TABLE leases (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    tenant_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    property_id UUID REFERENCES properties(id) ON DELETE CASCADE,
-    owner_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    start_date TIMESTAMP NOT NULL,
-    end_date TIMESTAMP NOT NULL,
-    rent DECIMAL(12, 2) NOT NULL,
-    deposit DECIMAL(12, 2) NOT NULL,
-    document_url VARCHAR(500),
-    ai_generated_draft TEXT,
-    status VARCHAR(20) DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'EXPIRED', 'TERMINATED', 'RENEWED')),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
 
 -- ============================================
 -- TABLE 10: subscriptions (Feature 14: Billing)
@@ -156,7 +213,7 @@ CREATE TABLE leases (
 CREATE TABLE subscriptions (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID UNIQUE REFERENCES users(id) ON DELETE CASCADE,
-    plan VARCHAR(20) DEFAULT 'FREE' CHECK (plan IN ('FREE', 'PREMIUM', 'BUSINESS')),
+    plan VARCHAR(20) DEFAULT 'FREE' CHECK (plan IN ('FREE', 'PREMIUM')),
     is_active BOOLEAN DEFAULT FALSE,
     stripe_customer_id VARCHAR(255),
     stripe_subscription_id VARCHAR(255),
@@ -202,20 +259,6 @@ CREATE TABLE search_history (
     search_query TEXT NOT NULL,
     ai_parsed JSONB,
     results_count INTEGER,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- ============================================
--- TABLE 14: notifications (Feature 7: Notifications)
--- ============================================
-CREATE TABLE notifications (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-    type VARCHAR(50) CHECK (type IN ('BOOKING', 'VISIT', 'MESSAGE', 'MAINTENANCE', 'LEASE', 'SYSTEM')),
-    title VARCHAR(255) NOT NULL,
-    message TEXT NOT NULL,
-    is_read BOOLEAN DEFAULT FALSE,
-    metadata JSONB,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -328,6 +371,20 @@ INSERT INTO subscriptions (id, user_id, plan, is_active, expires_at) VALUES
 INSERT INTO notifications (id, user_id, type, title, message) VALUES 
     (uuid_generate_v4(), (SELECT id FROM users WHERE email = 'owner@bashabhara.com'), 'BOOKING', 'New Visit Request', 'A tenant wants to visit your property');
 
+CREATE INDEX idx_rental_requirements_user_id
+ON rental_requirements(user_id);
+
+CREATE INDEX idx_rental_requirements_active
+ON rental_requirements(is_active);
+
+CREATE INDEX idx_ai_rental_chats_user_id
+ON ai_rental_chats(user_id);
+
+CREATE INDEX idx_match_notifications_user_id
+ON property_match_notifications(user_id);
+
+CREATE INDEX idx_match_notifications_property_id
+ON property_match_notifications(property_id);
 -- ============================================
 -- VERIFY TABLES
 -- ============================================
