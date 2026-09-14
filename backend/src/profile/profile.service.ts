@@ -4,7 +4,7 @@ class ProfileService {
   async getProfile(userId: string) {
     const result = await pool.query(
         `
-        SELECT id, full_name AS name, email, phone, role, profile_image
+        SELECT id, full_name AS name, email, phone, role, profile_image, is_verified, created_at
         FROM users
         WHERE id = $1
       `,

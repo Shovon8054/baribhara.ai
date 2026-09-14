@@ -25,130 +25,143 @@ const AdminNavbar = () => {
     { label: "Subscriptions", path: "/admin/subscriptions" },
   ];
 
+  const isActive = (path: string) => location.pathname === path;
+
   return (
-    <nav className="sticky top-0 z-50 flex flex-wrap items-center justify-between gap-3 border-b border-slate-800 bg-gradient-to-r from-slate-950 via-slate-950/98 to-slate-950/95 backdrop-blur-xl px-4 sm:px-6 py-3 sm:py-4 shadow-lg shadow-slate-950/30">
-      <div className="max-w-7xl mx-auto flex items-center justify-between w-full">
+    <header className="sticky top-0 z-50 w-full bg-[#060b18]/85 backdrop-blur-xl border-b border-slate-800/80 shadow-xl shadow-black/20">
+      {/* Top Ambient Glow Reflection Line */}
+      <div className="h-[1px] w-full bg-gradient-to-r from-transparent via-purple-500/40 to-transparent" />
 
-        {/* Logo Section */}
-        <Link to="/admin-dashboard" className="group flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center shadow-lg shadow-cyan-500/20 group-hover:shadow-cyan-500/40 transition-all duration-300">
-            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16 sm:h-20 gap-4">
+
+          {/* =========================================================
+              1. ADMIN BRAND LOGO
+          ========================================================= */}
+          <Link to="/admin-dashboard" className="flex items-center gap-3 group flex-shrink-0">
+            {/* Logo Icon Badge */}
+            <div className="relative">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-500 via-indigo-500 to-cyan-500 p-[1.5px] shadow-lg shadow-purple-500/20 group-hover:shadow-purple-500/40 group-hover:scale-105 transition-all duration-300">
+                <div className="w-full h-full rounded-[14px] bg-slate-950 flex items-center justify-center">
+                  <svg className="w-5 h-5 text-purple-400 group-hover:text-purple-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* Brand Text + Admin Badge */}
+            <div className="flex flex-col">
+              <div className="flex items-center gap-2">
+                <span className="text-base sm:text-lg font-black tracking-wider text-white group-hover:text-purple-300 transition-colors">
+                  BARIBHARA<span className="text-purple-400">.AI</span>
+                </span>
+              </div>
+              <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-purple-400 -mt-0.5 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" />
+                Admin Console
+              </span>
+            </div>
+          </Link>
+
+          {/* =========================================================
+              2. DESKTOP NAVIGATION
+          ========================================================= */}
+          <nav className="hidden md:flex items-center gap-1.5">
+            {navLinks.map((link) => {
+              const active = isActive(link.path);
+              return (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 ${
+                    active
+                      ? "text-purple-300 bg-purple-500/15 border border-purple-500/30 shadow-sm"
+                      : "text-slate-300 hover:text-white hover:bg-slate-800/50 border border-transparent"
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* =========================================================
+              3. RIGHT LOGOUT BUTTON
+          ========================================================= */}
+          <div className="hidden sm:flex items-center gap-3">
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 rounded-xl bg-slate-900/80 border border-slate-800 text-slate-300 hover:text-rose-300 hover:bg-rose-500/10 hover:border-rose-500/30 text-xs sm:text-sm font-semibold transition-all duration-200 flex items-center gap-2 shadow-sm"
+            >
+              <svg className="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              <span>Logout</span>
+            </button>
+          </div>
+
+          {/* =========================================================
+              4. MOBILE MENU BUTTON
+          ========================================================= */}
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-slate-700 transition-colors"
+            aria-label="Toggle menu"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              {isMobileMenuOpen ? (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              ) : (
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+              )}
             </svg>
-          </div>
-          <div>
-            <h1 className="text-sm sm:text-base font-bold uppercase tracking-[0.25em] text-cyan-400 group-hover:text-cyan-300 transition-colors duration-300">
-              BariBhara AI
-            </h1>
-            <p className="text-[10px] font-medium uppercase tracking-[0.35em] text-slate-400 hidden sm:block">
-              Admin Panel
-            </p>
-          </div>
-        </Link>
+          </button>
 
-        {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-1 lg:gap-2">
+        </div>
+      </div>
+
+      {/* =========================================================
+          5. MOBILE MENU DROPDOWN
+      ========================================================= */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-[#070d1e]/98 backdrop-blur-2xl border-b border-slate-800 px-4 py-5 space-y-2 shadow-2xl">
           {navLinks.map((link) => {
-            const isActive = location.pathname === link.path;
+            const active = isActive(link.path);
             return (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${isActive
-                    ? "text-cyan-400 bg-cyan-500/10"
-                    : "text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50"
-                  }`}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className={`block px-4 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                  active
+                    ? "bg-purple-500/15 text-purple-300 border border-purple-500/30"
+                    : "text-slate-300 hover:text-white hover:bg-slate-800/40"
+                }`}
               >
                 {link.label}
               </Link>
             );
           })}
 
-          {/* Logout Button */}
-          <button
-            onClick={handleLogout}
-            className="ml-2 px-5 py-2 rounded-lg bg-gradient-to-r from-red-500 to-rose-600 text-white text-sm font-medium hover:from-red-600 hover:to-rose-700 shadow-lg shadow-red-500/25 hover:shadow-red-500/40 transition-all duration-300 flex items-center gap-2"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-            </svg>
-            Logout
-          </button>
-        </div>
-
-        {/* Mobile Menu Button */}
-        <button
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden p-2 rounded-lg hover:bg-slate-800/50 transition-colors duration-300"
-          aria-label="Toggle menu"
-        >
-          <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            {isMobileMenuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            )}
-          </svg>
-        </button>
-
-        {/* Mobile Menu */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden w-full bg-slate-950/98 backdrop-blur-xl rounded-xl border border-slate-800 p-4 mt-2 space-y-2 animate-slideDown">
-            {navLinks.map((link) => {
-              const isActive = location.pathname === link.path;
-              return (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-300 ${isActive
-                      ? "text-cyan-400 bg-cyan-500/10"
-                      : "text-slate-300 hover:text-cyan-400 hover:bg-slate-800/50"
-                    }`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                  </svg>
-                  {link.label}
-                </Link>
-              );
-            })}
-
-            <div className="pt-2 border-t border-slate-800">
-              <button
-                onClick={() => {
-                  handleLogout();
-                  setIsMobileMenuOpen(false);
-                }}
-                className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-lg bg-gradient-to-r from-red-500 to-rose-600 text-white text-sm font-medium hover:from-red-600 hover:to-rose-700 transition-all duration-300"
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                </svg>
-                Logout
-              </button>
-            </div>
+          <div className="pt-4 border-t border-slate-800/80">
+            <button
+              type="button"
+              onClick={() => {
+                handleLogout();
+                setIsMobileMenuOpen(false);
+              }}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-900 border border-slate-800 text-rose-300 hover:bg-rose-500/10 hover:border-rose-500/30 text-sm font-semibold transition-colors"
+            >
+              <svg className="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              <span>Logout</span>
+            </button>
           </div>
-        )}
-      </div>
-
-      {/* CSS Animation */}
-      <style>{`
-        @keyframes slideDown {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-slideDown {
-          animation: slideDown 0.3s ease-out;
-        }
-      `}</style>
-    </nav>
+        </div>
+      )}
+    </header>
   );
 };
 
