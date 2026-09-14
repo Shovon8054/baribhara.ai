@@ -14,6 +14,7 @@ export async function login(req, res) {
             message: "Login successful",
             data: {
                 user: result.user,
+                accessToken: result.accessToken,
             },
         });
     }

@@ -3,3 +3,5 @@ node_modules/
 .DS_Store
 dist/
 cookie.txt
+backend/src/uploads/profiles/
+backend/src/uploads/properties/

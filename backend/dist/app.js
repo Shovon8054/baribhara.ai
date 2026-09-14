@@ -16,11 +16,27 @@ app.use(helmet({
 app.use(compression());
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
+const allowedOrigins = [
+    process.env.FRONTEND_URL,
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+].filter(Boolean);
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: (origin, callback) => {
+        // Allow server-to-server requests (no origin header)
+        if (!origin)
+            return callback(null, true);
+        // Allow any vercel.app preview/production URL
+        if (origin.endsWith(".vercel.app"))
+            return callback(null, true);
+        // Allow explicitly whitelisted origins
+        if (allowedOrigins.includes(origin))
+            return callback(null, true);
+        callback(new Error(`CORS: origin ${origin} not allowed`));
+    },
     credentials: true,
 }));
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+app.use("/uploads", express.static(path.join(process.cwd(), "src/uploads")));
 // Older seeded properties reference images that may not exist on disk.
 // Serve a lightweight placeholder instead of returning a broken image/404.
 app.get("/uploads/properties/:filename", (_req, res) => {
@@ -41,7 +57,10 @@ app.use('/api', routes);
 app.get('/health', (_req, res) => {
     res.status(200).json({ status: 'ok', service: 'baribhara-api' });
 });
-app.get('/', (_req, res) => {
-    res.status(200).json({ message: 'BariBhara API is running' });
+app.use((err, _req, res, _next) => {
+    console.error("Global Error Handler:", err);
+    const status = err.status || err.statusCode || 500;
+    const message = err.message || "Internal Server Error";
+    res.status(status).json({ status: "error", message });
 });
 export default app;

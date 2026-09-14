@@ -2,7 +2,7 @@ import pool from "../db/dbConnection.js";
 class ProfileService {
     async getProfile(userId) {
         const result = await pool.query(`
-        SELECT id, full_name AS name, email, phone, role
+        SELECT id, full_name AS name, email, phone, role, profile_image, is_verified, created_at
         FROM users
         WHERE id = $1
       `, [userId]);

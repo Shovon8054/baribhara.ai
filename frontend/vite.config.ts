@@ -7,18 +7,18 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        // The API server listens on PORT (8081 in the local environment).
-        target: 'http://localhost:8081',
+        // Use explicit IPv4 127.0.0.1 to avoid IPv6 ECONNREFUSED on Node 18+
+        target: 'http://127.0.0.1:8081',
         changeOrigin: true,
         secure: false,
       },
       '/uploads': {
-        target: 'http://localhost:8081',
+        target: 'http://127.0.0.1:8081',
         changeOrigin: true,
         secure: false,
       },
       '/socket.io': {
-        target: 'http://localhost:8081',
+        target: 'http://127.0.0.1:8081',
         ws: true,
         changeOrigin: true,
         secure: false,

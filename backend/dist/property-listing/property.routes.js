@@ -36,7 +36,36 @@ const upload = multer({
         fileSize: 5 * 1024 * 1024, // 5MB
     },
 });
-router.post("/", requireAuth, upload.array("images", 5), propertyController.createProperty);
+const handleUpload = (req, res, next) => {
+    upload.array("images", 5)(req, res, (err) => {
+        if (err instanceof multer.MulterError) {
+            if (err.code === "LIMIT_UNEXPECTED_FILE") {
+                return res.status(400).json({
+                    status: "fail",
+                    message: "Maximum 5 images allowed.",
+                });
+            }
+            if (err.code === "LIMIT_FILE_SIZE") {
+                return res.status(400).json({
+                    status: "fail",
+                    message: "Each image size cannot exceed 5MB.",
+                });
+            }
+            return res.status(400).json({
+                status: "fail",
+                message: err.message,
+            });
+        }
+        else if (err) {
+            return res.status(400).json({
+                status: "fail",
+                message: err.message || "File upload error",
+            });
+        }
+        next();
+    });
+};
+router.post("/", requireAuth, handleUpload, propertyController.createProperty);
 router.get("/", propertyController.getAllProperties);
 router.get("/search", propertyController.searchProperties);
 router.delete("/:id", requireAuth, propertyController.deleteProperty);

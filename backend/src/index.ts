@@ -8,12 +8,10 @@ import app from "./app.js";
 import pool from "./db/dbConnection.js";
 import { initializeChatSocket } from "./chat/chat.socket.js";
 
-dotenv.config({
-  path: path.resolve(
-    process.cwd(),
-    "../.env"
-  ),
-});
+// Load .env from project root for local dev.
+// On Render/production, env vars are injected directly — dotenv is a no-op.
+dotenv.config({ path: path.resolve(process.cwd(), "../.env") });
+dotenv.config({ path: path.resolve(process.cwd(), ".env") }); // fallback: backend/.env
 
 const HOST =
   process.env.HOST ||
