@@ -2,15 +2,19 @@ import propertyService from "./property.service.js";
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { uploadToCloudinary, deleteFromCloudinary } from "../utils/cloudinary.js";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const propertyController = {
     async createProperty(req, res) {
         try {
-            // Uploaded images
+            // Upload images to Cloudinary
             const files = req.files;
-            const images = files
-                ? files.map((file) => `/uploads/properties/${file.filename}`)
-                : [];
+            let images = [];
+            if (files && files.length > 0) {
+                const uploadPromises = files.map((file) => uploadToCloudinary(file.buffer, "baribhara/properties"));
+                const uploadResults = await Promise.all(uploadPromises);
+                images = uploadResults.map((result) => result.secure_url);
+            }
             const { title, description, price, bedrooms, bathrooms, area, location, latitude, longitude, property_type, furnished, family_bachelor, parking, lift, pet_friendly, availability, amenities, nearby_facilities, } = req.body;
             // owner_id must come from the authenticated user
             const owner_id = req.user?.id;
@@ -94,11 +98,26 @@ const propertyController = {
             }
             const ownerId = req.user.id;
             const property = await propertyService.deleteProperty(propertyId, ownerId);
-            // Delete images from uploads folder
-            for (const image of property.images) {
-                const imagePath = path.join(__dirname, "../uploads/properties", path.basename(image));
-                if (fs.existsSync(imagePath)) {
-                    fs.unlinkSync(imagePath);
+            // Delete images from Cloudinary or local disk
+            if (Array.isArray(property.images)) {
+                for (const image of property.images) {
+                    if (typeof image === "string" && image.includes("cloudinary.com")) {
+                        // Extract public_id from Cloudinary URL: e.g. baribhara/properties/xyz
+                        const parts = image.split("/");
+                        const uploadIndex = parts.indexOf("upload");
+                        if (uploadIndex !== -1) {
+                            const pathParts = parts.slice(uploadIndex + 2); // skip upload and version e.g. v1234
+                            const filenameWithExt = pathParts.join("/");
+                            const publicId = filenameWithExt.substring(0, filenameWithExt.lastIndexOf("."));
+                            await deleteFromCloudinary(publicId);
+                        }
+                    }
+                    else if (typeof image === "string") {
+                        const imagePath = path.join(__dirname, "../uploads/properties", path.basename(image));
+                        if (fs.existsSync(imagePath)) {
+                            fs.unlinkSync(imagePath);
+                        }
+                    }
                 }
             }
             res.status(200).json({

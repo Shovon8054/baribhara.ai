@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import editProfileService from "./editProfile.service.js";
+import { uploadToCloudinary } from "../../utils/cloudinary.js";
 
 const editProfileController = {
     async updateProfile(req: Request, res: Response) {
@@ -31,18 +32,18 @@ const editProfileController = {
             }
 
             // =========================
-            // Get Uploaded Image
+            // Upload Profile Image to Cloudinary
             // =========================
 
             const file = req.file;
-
-            console.log("Uploaded file:", file);
-
             let profile_image: string | undefined;
 
             if (file) {
-                profile_image =
-                    `/uploads/profiles/${file.filename}`;
+                const uploadResult = await uploadToCloudinary(
+                    file.buffer,
+                    "baribhara/profiles"
+                );
+                profile_image = uploadResult.secure_url;
             }
 
             console.log(

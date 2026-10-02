@@ -1,40 +1,13 @@
 import { Router } from "express";
 import multer from "multer";
-import path from "path";
-import fs from "fs";
-
 import editProfileController from "./editProfile.controller.js";
 import requireAuth from "../../middleware/authMiddleware.js";
 import type { Request, Response, NextFunction } from "express";
 
 const router = Router();
 
-// =========================
-// Multer Storage
-// =========================
-
-const UPLOAD_DIR = path.join(process.cwd(), "src", "uploads", "profiles");
-
-// Ensure the upload directory exists
-fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, UPLOAD_DIR);
-    },
-
-    filename: (req, file, cb) => {
-        const uniqueName =
-            Date.now() +
-            "-" +
-            Math.round(Math.random() * 1e9);
-
-        cb(
-            null,
-            uniqueName + path.extname(file.originalname)
-        );
-    },
-});
+// In-memory storage for Cloudinary stream upload
+const storage = multer.memoryStorage();
 
 // =========================
 // File Filter

@@ -1,6 +1,5 @@
 import { Router } from "express";
 import multer from "multer";
-import path from "path";
 import propertyController from "./property.controller.js";
 import requireAuth from "../middleware/authMiddleware.js";
 
@@ -8,22 +7,8 @@ import requireAuth from "../middleware/authMiddleware.js";
 
 const router = Router();
 
-// Storage
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "src/uploads/properties");
-  },
-
-  filename: (req, file, cb) => {
-    const uniqueName =
-      Date.now() + "-" + Math.round(Math.random() * 1e9);
-
-    cb(
-      null,
-      uniqueName + path.extname(file.originalname)
-    );
-  },
-});
+// In-memory storage for Cloudinary stream upload
+const storage = multer.memoryStorage();
 
 // File Filter
 const fileFilter: multer.Options["fileFilter"] = (
