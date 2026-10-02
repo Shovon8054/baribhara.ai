@@ -9,6 +9,10 @@ class ChatService {
                 other_user.id AS user_id,
                 other_user.full_name,
                 other_user.profile_image,
+                EXISTS (
+                    SELECT 1 FROM user_verifications uv
+                    WHERE uv.user_id = other_user.id AND uv.status = 'VERIFIED'
+                ) AS is_verified,
 
                 latest_message.content AS last_message,
                 latest_message.created_at AS last_message_time,
@@ -127,12 +131,16 @@ class ChatService {
     async getChatUser(userId) {
         const result = await pool.query(`
         SELECT
-            id,
-            full_name,
-            profile_image,
-            role
-        FROM users
-        WHERE id = $1
+            u.id,
+            u.full_name,
+            u.profile_image,
+            u.role,
+            EXISTS (
+                SELECT 1 FROM user_verifications uv
+                WHERE uv.user_id = u.id AND uv.status = 'VERIFIED'
+            ) AS is_verified
+        FROM users u
+        WHERE u.id = $1
         `, [userId]);
         if (result.rows.length === 0) {
             throw new Error("User not found");

@@ -30,4 +30,6 @@ export interface PropertyDetails {
   full_name: string;
   email: string;
   phone: string;
+  /** Derived from user_verifications.status — never stored on properties table */
+  owner_is_verified?: boolean;
 }

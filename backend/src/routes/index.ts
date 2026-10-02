@@ -16,6 +16,7 @@ import comparisonRoutes from "../ai-comparison/comparison.routes.js";
 import chatRoutes from "../chat/chat.routes.js";
 
 import subscriptionRoutes from "../subscription/subscription.routes.js";
+import verificationRoutes from "../verification/verification.routes.js";
 
 // admin
 import adminUserRoutes from "../admin/users/adminUser.routes.js";
@@ -24,6 +25,8 @@ import adminPropertyRoutes
 
 import adminSubscriptionRoutes
     from "../admin/subscriptions/adminSubscription.routes.js";
+import adminVerificationRoutes
+    from "../admin/verifications/adminVerification.routes.js";
 
 
 
@@ -57,6 +60,8 @@ router.use(
     subscriptionRoutes
 );
 
+router.use("/verification", verificationRoutes);
+
 
 router.use("/admin/users", adminUserRoutes);
 router.use(
@@ -67,6 +72,10 @@ router.use(
 router.use(
     "/admin/subscriptions",
     adminSubscriptionRoutes
+);
+router.use(
+    "/admin/verifications",
+    adminVerificationRoutes
 );
 
 // console.log("Main routes loaded");

@@ -149,16 +149,17 @@ const ensureDefaultUsers = async () => {
     for (const acc of demoAccounts) {
       const hashedPassword = await bcrypt.hash(acc.password, 10);
       const checkRes = await pool.query("SELECT id FROM users WHERE email = $1", [acc.email]);
+      const isVerified = acc.role === "ADMIN";
       if (checkRes.rows.length === 0) {
         await pool.query(
           `INSERT INTO users (email, password, full_name, phone, role, is_verified, is_active)
-           VALUES ($1, $2, $3, $4, $5, true, true)`,
-          [acc.email, hashedPassword, acc.full_name, acc.phone, acc.role]
+           VALUES ($1, $2, $3, $4, $5, $6, true)`,
+          [acc.email, hashedPassword, acc.full_name, acc.phone, acc.role, isVerified]
         );
         console.log(`Demo user ${acc.email} (${acc.role}) created successfully.`);
       } else {
         await pool.query(
-          `UPDATE users SET password = $1, role = $2, full_name = $3, is_verified = true, is_active = true WHERE email = $4`,
+          `UPDATE users SET password = $1, role = $2, full_name = $3, is_active = true WHERE email = $4`,
           [hashedPassword, acc.role, acc.full_name, acc.email]
         );
         console.log(`Demo user ${acc.email} (${acc.role}) credentials verified/updated.`);

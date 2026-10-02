@@ -6,6 +6,9 @@ import {
     getMyProperties,
 } from "../../services/profile.service";
 import api from "../../api/axios";
+import VerificationPanel from "../../components/VerificationPanel";
+import VerificationBadge from "../../components/VerificationBadge";
+import type { VerificationStatus } from "../../services/verification.service";
 
 interface User {
     id: string;
@@ -47,6 +50,7 @@ const Profile = () => {
     const [loading, setLoading] = useState(true);
     const [propertyLoading, setPropertyLoading] = useState(true);
     const [copiedField, setCopiedField] = useState<string | null>(null);
+    const [verificationStatus, setVerificationStatus] = useState<VerificationStatus | null>(null);
 
     // =========================
     // FETCH DATA
@@ -184,6 +188,11 @@ const Profile = () => {
                                         <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
                                             {user?.name || "Member"}
                                         </h1>
+
+                                        {/* Verification Badge */}
+                                        {verificationStatus === "VERIFIED" && (
+                                            <VerificationBadge status="VERIFIED" size="sm" showLabel />
+                                        )}
 
                                         {/* Role Badge */}
                                         <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold tracking-wider uppercase ${
@@ -435,7 +444,16 @@ const Profile = () => {
                 </div>
 
                 {/* =========================================================
-                    3. PROPERTIES SECTION (Executive Luxury Cards)
+                    3. IDENTITY VERIFICATION PANEL
+                ========================================================= */}
+                <div className="mb-10">
+                    <VerificationPanel
+                        onStatusChange={(status) => setVerificationStatus(status)}
+                    />
+                </div>
+
+                {/* =========================================================
+                    4. PROPERTIES SECTION (Executive Luxury Cards)
                 ========================================================= */}
                 <div>
                     {/* Header */}

@@ -7,6 +7,7 @@ import {
 } from "../../services/chat.service";
 
 import { getImageUrl } from "../../utils/imageUrl";
+import VerificationBadge from "../../components/VerificationBadge";
 
 const ChatList = () => {
 
@@ -202,9 +203,14 @@ const ChatList = () => {
                                     {/* Chat Info */}
                                     <div className="flex-1 min-w-0">
                                         <div className="flex justify-between items-center mb-1">
-                                            <h2 className="font-semibold text-white text-base truncate group-hover:text-cyan-400 transition-colors duration-200">
-                                                {chat.full_name}
-                                            </h2>
+                                            <div className="flex items-center gap-2 min-w-0">
+                                                <h2 className="font-semibold text-white text-base truncate group-hover:text-cyan-400 transition-colors duration-200">
+                                                    {chat.full_name}
+                                                </h2>
+                                                {chat.is_verified && (
+                                                    <VerificationBadge status="VERIFIED" size="xs" showLabel />
+                                                )}
+                                            </div>
                                             <span className="text-[10px] text-slate-500 ml-2 flex-shrink-0 font-medium">
                                                 {new Date(chat.last_message_time).toLocaleTimeString([], {
                                                     hour: "2-digit",

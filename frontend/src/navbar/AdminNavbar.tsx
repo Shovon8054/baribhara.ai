@@ -23,7 +23,9 @@ const AdminNavbar = () => {
     { label: "Users", path: "/admin/users" },
     { label: "Properties", path: "/admin/properties" },
     { label: "Subscriptions", path: "/admin/subscriptions" },
+    { label: "Verifications", path: "/admin/verifications" },
   ];
+
 
   const isActive = (path: string) => location.pathname === path;
 

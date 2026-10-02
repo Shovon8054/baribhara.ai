@@ -29,6 +29,7 @@ import AdminUsers from "./pages/admin/AdminUsers";
 import AdminProperties from "./pages/admin/AdminProperties";
 import AdminSubscriptions
   from "./pages/admin/AdminSubscriptions";
+import AdminVerifications from "./pages/admin/AdminVerifications";
 
 
 const App = () => {
@@ -131,6 +132,11 @@ const App = () => {
           <Route
             path="/admin/subscriptions"
             element={<AdminSubscriptions />}
+          />
+
+          <Route
+            path="/admin/verifications"
+            element={<AdminVerifications />}
           />
           {/* <Route path="/browse-properties" element={<BrowseProperties />} /> */}
         </Routes>

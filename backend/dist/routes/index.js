@@ -12,10 +12,12 @@ import favoriteRoutes from "../favorites/favorite.routes.js";
 import comparisonRoutes from "../ai-comparison/comparison.routes.js";
 import chatRoutes from "../chat/chat.routes.js";
 import subscriptionRoutes from "../subscription/subscription.routes.js";
+import verificationRoutes from "../verification/verification.routes.js";
 // admin
 import adminUserRoutes from "../admin/users/adminUser.routes.js";
 import adminPropertyRoutes from "../admin/properties/adminProperty.routes.js";
 import adminSubscriptionRoutes from "../admin/subscriptions/adminSubscription.routes.js";
+import adminVerificationRoutes from "../admin/verifications/adminVerification.routes.js";
 const router = Router();
 router.use("/auth", authRoutes);
 // POST http://localhost:8083/api/auth/register
@@ -34,8 +36,10 @@ router.use("/favorites", favoriteRoutes);
 router.use("/ai", comparisonRoutes);
 router.use("/chat", chatRoutes);
 router.use("/subscription", subscriptionRoutes);
+router.use("/verification", verificationRoutes);
 router.use("/admin/users", adminUserRoutes);
 router.use("/admin/properties", adminPropertyRoutes);
 router.use("/admin/subscriptions", adminSubscriptionRoutes);
+router.use("/admin/verifications", adminVerificationRoutes);
 // console.log("Main routes loaded");
 export default router;

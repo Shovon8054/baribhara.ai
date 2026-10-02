@@ -284,6 +284,45 @@ CREATE TABLE saved_searches (
 );
 
 -- ============================================
+-- TABLE 16: user_verifications (User Verification System)
+-- ============================================
+CREATE TABLE user_verifications (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE UNIQUE,
+    document_name VARCHAR(255),
+    father_name VARCHAR(255),
+    mother_name VARCHAR(255),
+    date_of_birth DATE,
+    nid_hash VARCHAR(255),
+    document_public_id VARCHAR(255),
+    status VARCHAR(50) NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'VERIFIED', 'REJECTED', 'MANUAL_REVIEW')),
+    verified_at TIMESTAMP,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ============================================
+-- TABLE 17: verification_attempts (Verification History & Audit)
+-- ============================================
+CREATE TABLE verification_attempts (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    verification_id UUID REFERENCES user_verifications(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    document_name VARCHAR(255),
+    father_name VARCHAR(255),
+    mother_name VARCHAR(255),
+    date_of_birth DATE,
+    nid_hash VARCHAR(255),
+    document_public_id VARCHAR(255),
+    status VARCHAR(50) NOT NULL CHECK (status IN ('PENDING', 'VERIFIED', 'REJECTED', 'MANUAL_REVIEW')),
+    rejection_reason TEXT,
+    review_notes TEXT,
+    reviewed_by UUID REFERENCES users(id) ON DELETE SET NULL,
+    attempt_number INTEGER DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ============================================
 -- CREATE INDEXES (For faster queries)
 -- ============================================
 
@@ -306,6 +345,12 @@ CREATE INDEX idx_maintenance_tenant_id ON maintenance(tenant_id);
 CREATE INDEX idx_maintenance_status ON maintenance(status);
 CREATE INDEX idx_subscriptions_user_id ON subscriptions(user_id);
 CREATE INDEX idx_subscriptions_plan ON subscriptions(plan);
+CREATE INDEX idx_user_verifications_user_id ON user_verifications(user_id);
+CREATE INDEX idx_user_verifications_status ON user_verifications(status);
+CREATE INDEX idx_user_verifications_nid_hash ON user_verifications(nid_hash);
+CREATE INDEX idx_verification_attempts_verification_id ON verification_attempts(verification_id);
+CREATE INDEX idx_verification_attempts_user_id ON verification_attempts(user_id);
+CREATE INDEX idx_verification_attempts_status ON verification_attempts(status);
 
 -- Full text search for AI search
 CREATE INDEX idx_properties_search ON properties USING GIN(to_tsvector('english', title || ' ' || COALESCE(description, '')));
@@ -329,6 +374,7 @@ CREATE TRIGGER update_reviews_updated_at BEFORE UPDATE ON reviews FOR EACH ROW E
 CREATE TRIGGER update_maintenance_updated_at BEFORE UPDATE ON maintenance FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 CREATE TRIGGER update_subscriptions_updated_at BEFORE UPDATE ON subscriptions FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 CREATE TRIGGER update_saved_searches_updated_at BEFORE UPDATE ON saved_searches FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+CREATE TRIGGER update_user_verifications_updated_at BEFORE UPDATE ON user_verifications FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 -- ============================================
 -- INSERT SAMPLE DATA (For Testing)

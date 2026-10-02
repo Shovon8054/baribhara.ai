@@ -7,7 +7,8 @@ class DetailsService {
         u.full_name,
         u.email,
         u.phone,
-        u.role
+        u.role,
+        u.is_verified AS owner_is_verified
       FROM properties p
       JOIN users u
         ON p.owner_id = u.id

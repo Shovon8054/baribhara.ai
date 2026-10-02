@@ -20,6 +20,7 @@ import {
 
 import api from "../../api/axios";
 import { BACKEND_URL } from "../../utils/imageUrl";
+import VerificationBadge from "../../components/VerificationBadge";
 
 
 // =====================================
@@ -33,6 +34,7 @@ interface ChatUser {
     phone?: string;
     profile_image?: string | null;
     role?: string;
+    is_verified?: boolean;
 }
 
 
@@ -782,9 +784,14 @@ const ChatPage = () => {
 
                         {/* Name + Status */}
                         <div className="flex-1 min-w-0">
-                            <h1 className="font-semibold text-base sm:text-lg text-white truncate">
-                                {chatUser?.full_name || "User"}
-                            </h1>
+                            <div className="flex items-center gap-2">
+                                <h1 className="font-semibold text-base sm:text-lg text-white truncate">
+                                    {chatUser?.full_name || "User"}
+                                </h1>
+                                {chatUser?.is_verified && (
+                                    <VerificationBadge status="VERIFIED" size="xs" showLabel />
+                                )}
+                            </div>
                             {typing ? (
                                 <p className="text-xs text-cyan-400 font-medium flex items-center gap-1.5">
                                     <span className="flex gap-1">

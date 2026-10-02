@@ -17,6 +17,7 @@ export interface ChatUser {
     last_message: string;
     last_message_time: string;
     unread_count: number;
+    is_verified?: boolean;
 }
 
 // Get all conversations
