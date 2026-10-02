@@ -59,7 +59,7 @@ const ChatList = () => {
 
     if (loading) {
         return (
-            <div className="min-h-[calc(100vh-64px)] bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-6">
+            <div className="min-h-[calc(100dvh-64px)] sm:min-h-[calc(100dvh-80px)] bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-6">
                 <div className="flex flex-col items-center gap-3">
                     <div className="w-8 h-8 border-3 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin"></div>
                     <p className="text-slate-400 text-sm">Loading chats...</p>
@@ -69,7 +69,7 @@ const ChatList = () => {
     }
 
     return (
-        <div className="min-h-[calc(100vh-64px)] bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 px-4 sm:px-6 py-6 sm:py-10">
+        <div className="min-h-[calc(100dvh-64px)] sm:min-h-[calc(100dvh-80px)] bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 px-4 sm:px-6 py-6 sm:py-10">
             <div className="max-w-3xl mx-auto space-y-6">
 
                 {/* Header */}
