@@ -7,6 +7,7 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Socket.IO](https://img.shields.io/badge/Socket.io-010101?style=for-the-badge&logo=socket.io&logoColor=white)
 ![Google Gemini](https://img.shields.io/badge/Google_Gemini-8E75B2?style=for-the-badge&logo=googlegemini&logoColor=white)
+![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white)
 ![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)
 ![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)
 
@@ -14,7 +15,7 @@
 
 ## 📌 Overview
 
-**BariBhara.AI** is a modern, full-stack **AI-Powered Rental & Property Management SaaS platform**. Engineered with a clean **feature-based architecture**, it leverages **Google Gemini AI** for intelligent conversational property search and automated listing generation, backed by high-performance **Raw PostgreSQL queries (Zero ORM overhead)** and **Real-Time WebSockets (Socket.IO)**.
+**BariBhara.AI** is a modern, full-stack **AI-Powered Rental & Property Management SaaS platform**. Engineered with a clean **feature-based architecture**, it leverages **Google Gemini AI** for intelligent conversational property search, automated listing generation, and **multimodal NID identity verification**, backed by high-performance **Raw PostgreSQL queries (Zero ORM overhead)**, secure **Cloudinary asset storage**, and **Real-Time WebSockets (Socket.IO)**.
 
 ---
 
@@ -25,27 +26,39 @@ Say goodbye to complex filter forms. Tenants can express what they are looking f
 > *"Need a 3-bedroom family apartment under 25k in Dhanmondi."*
 
 - **Gemini AI Query Intelligence:** Extracts budget constraints, desired locations, bedroom/bathroom counts, tenant suitability and required amenities in real-time.
-- **Raw SQL Conversion:** Seamlessly translates structured AI outputs into optimized, paramaterized PostgreSQL queries with a resilient regex fallback engine.
+- **Raw SQL Conversion:** Seamlessly translates structured AI outputs into optimized, parameterized PostgreSQL queries with a resilient regex fallback engine.
 
 ---
 
-### ⚡ 2. Real-Time Chat & Messaging (Socket.IO)
+### 🛡️ 2. AI-Powered NID Identity Verification System
+Trust and safety are paramount in rental marketplaces. BariBhara.AI features an end-to-end automated National ID verification pipeline:
+- **Multimodal AI OCR:** Uses **Google Gemini AI** to extract NID number, full name, father's/mother's name, date of birth, and address directly from uploaded NID PDFs.
+- **Automated Data Matching:** Compares extracted NID credentials against the user's registration details with fuzzy matching tolerance.
+- **Duplicate & Fraud Prevention:** Enforces unique NID constraints across all accounts to prevent identity reuse.
+- **Multi-State Lifecycle:** State machine handling `NOT_SUBMITTED` ➔ `PENDING` ➔ `VERIFIED` / `MANUAL_REVIEW` / `REJECTED`.
+- **Admin Verification Portal & Secure PDF Proxy:** Administrators can review pending submissions, inspect NID PDFs through an authenticated streaming backend proxy, and approve/reject with detailed feedback notes.
+- **Platform-Wide Verified Badges:** Verified users earn trusted verification badges displayed across Profiles, Property Listings, and Real-Time Chat headers.
+
+---
+
+### ⚡ 3. Real-Time Chat & Messaging (Socket.IO)
 Direct, friction-free communication between property owners and prospective tenants:
 - **Instant Messaging:** Low-latency WebSocket bidirectional communication.
-- **Live User Status:** Real-time online/offline presence indicators.
-- **Typing Indicators:** Real-time visual feedback when a conversation partner is typing.
-- **Read Receipts:** Track message delivery and read confirmations.
+- **Viewport-Docked Layout:** Zero window scrolling with internal message container scrolling.
+- **Smart Auto-Scroll & Jump:** Smooth auto-scroll with floating "Scroll to bottom" button when reviewing history.
+- **Date Dividers & Read Receipts:** Day-based message grouping (`Today`, `Yesterday`), live typing indicators, and delivery/read receipts (`✓` / `✓✓`).
+- **Verified Status in Chat:** View the conversation partner's real-time online status and verified identity badge.
 
 ---
 
-### ✍️ 3. AI Listing Assistant for Property Owners
+### ✍️ 4. AI Listing Assistant for Property Owners
 Allows landlords and property owners to publish high-converting listings in seconds:
 - **Automated Copywriting:** Generates rich, professional property descriptions and catchy titles based on basic specs.
 - **Listing Optimization:** Identifies missing details and suggests high-impact improvements to boost conversion.
 
 ---
 
-### 📊 4. Favorites & AI Property Comparison
+### 📊 5. Favorites & AI Property Comparison
 Intelligent decision-making engine for prospective tenants:
 - **Wishlist Management:** One-tap favorite bookmarking.
 - **AI Comparative Evaluation:** Select multiple saved properties and let Gemini AI analyze price-to-area ratios, amenity density, location advantages, and recommend the best value-for-money option.
@@ -61,28 +74,38 @@ Intelligent decision-making engine for prospective tenants:
 
 ---
 
-### 🏢 2. Property Listing Management
-- Multi-image upload handling (with server-side Multer image validation & max file limit caps).
+### 🛡️ 2. Identity Verification & Trust Engine
+- **PDF Upload & Validation:** Accepts official NID documents via Multer with strict MIME/size validation.
+- **Cloudinary Storage:** Secure upload and storage of NID documents.
+- **AI Document Extraction:** Google Gemini Multimodal Vision API extracts structured identification data from PDF pages.
+- **Admin Review Console:** Dedicated verification management dashboard for approving, rejecting, or requesting re-submission with audit notes.
+- **Authenticated PDF Proxy:** Protects sensitive NID files by streaming documents through an authenticated admin-only backend proxy (`/api/admin/verifications/:id/document`).
+
+---
+
+### 🏢 3. Property Listing Management
+- Multi-image upload handling (with server-side Multer image validation & Cloudinary image hosting).
 - Detailed metadata: Price, Area (sqft), Bedrooms, Bathrooms, Property Type (Apartment, House, Flat, Studio, Penthouse, Duplex).
 - Amenities & Nearby Facilities tracking (Schools, Hospitals, Supermarkets, Parks).
 - Availability toggle & dynamic status tracking.
 
 ---
 
-### 🔍 3. Multi-Criteria Advanced Search & Filter
+### 🔍 4. Multi-Criteria Advanced Search & Filter
 - Multi-dimensional filtering by budget range, location search, room counts, and property categories.
 - Dynamic sorting by price (Ascending/Descending), date listed, and popularity metrics.
 
 ---
 
-### 💳 4. SaaS Subscription & Tiered Billing
+### 💳 5. SaaS Subscription & Tiered Billing
 - **Free Tier:** Access core browsing, basic search, and listing creation.
 - **Premium Tier:** Unlocks unlimited AI Natural Language Search, AI Comparison Insights, and Real-Time Owner Chat.
 
 ---
 
-### 🛠️ 5. Admin Dashboard & Platform Controls
+### 🛠️ 6. Admin Dashboard & Platform Controls
 - **User Management:** View, filter, verify, or suspend platform accounts.
+- **Identity Verification Moderation:** Review submitted NID documents, verify details, and manage approval statuses.
 - **Property Moderation:** Full oversight to review and delete invalid property listings.
 - **Subscription Oversight:** Monitor billing plans and active premium subscriptions.
 
@@ -93,10 +116,11 @@ Intelligent decision-making engine for prospective tenants:
 ### 🎨 Frontend
 - **Framework:** React + Vite
 - **Language:** TypeScript
-- **Styling:** Vanilla CSS (Glassmorphism & Modern Dark UI Design Token System)
+- **Styling:** Vanilla CSS & TailwindCSS (Glassmorphism & Modern Dark UI Design Token System)
 - **Icons:** Heroicons / Lucide React
 - **Real-Time Client:** `socket.io-client`
 - **HTTP Client:** Axios with dynamic base URL resolution
+- **Notifications:** React Hot Toast
 
 ---
 
@@ -104,8 +128,9 @@ Intelligent decision-making engine for prospective tenants:
 - **Runtime:** Node.js (ES Modules)
 - **Framework:** Express.js
 - **Language:** TypeScript
-- **Database Engine:** PostgreSQL via `pg` pool (**Raw SQL queries — No Prisma / No ORM overhead**)
+- **Database Engine:** PostgreSQL via `pg` pool (**Raw SQL queries — Zero ORM overhead**)
 - **AI Integration:** Google Gemini SDK (`@google/genai` & `@google/generative-ai`)
+- **Document & Image Storage:** Cloudinary (`cloudinary`) + Multer
 - **Real-Time Engine:** Socket.IO
 - **Security:** Helmet, CORS, Bcrypt Password Hashing, JWT
 
@@ -117,24 +142,35 @@ Intelligent decision-making engine for prospective tenants:
 baribhara.ai/
 ├── backend/
 │   ├── src/
-│   │   ├── admin/               # Admin dashboard & management routes
+│   │   ├── admin/
+│   │   │   ├── verifications/   # Admin NID verification & PDF proxy controller/routes
+│   │   │   ├── users/           # Admin user management
+│   │   │   ├── properties/      # Admin property moderation
+│   │   │   └── subscriptions/   # Admin subscription oversight
 │   │   ├── ai/                  # Gemini AI Search & Assistant integration
-│   │   ├── auth/                # Auth, JWT, Signup, Verification
+│   │   ├── auth/                # Auth, JWT, Signup, Email Verification
 │   │   ├── chat/                # Real-time chat & Socket.IO handlers
 │   │   ├── db/                  # Raw SQL schema (db.sql) & Pool config
 │   │   ├── property-listing/    # Property CRUD, upload handlers & filters
 │   │   ├── subscription/        # SaaS subscription logic
+│   │   ├── verification/        # Identity verification service, Gemini OCR & routes
+│   │   ├── utils/               # Cloudinary uploader, email service, DB helpers
 │   │   ├── app.ts               # Express configuration & CORS setup
-│   │   └── index.ts             # Server entrypoint & DB auto-seeding
+│   │   └── index.ts             # Server entrypoint & DB auto-migrations
 │   ├── package.json
 │   └── tsconfig.json
 │
 ├── frontend/
 │   ├── src/
 │   │   ├── api/                 # Axios instance & environment config
-│   │   ├── components/          # Reusable UI components & AI search bar
-│   │   ├── pages/               # Feature pages (Auth, Listings, Chat, Profile)
-│   │   ├── services/            # API Service layer
+│   │   ├── components/          # Reusable components, VerificationBadge, VerificationPanel
+│   │   ├── pages/
+│   │   │   ├── admin/           # AdminDashboard, AdminVerifications, AdminProperties
+│   │   │   ├── chat/            # Viewport-docked ChatPage & ChatList
+│   │   │   ├── profile/         # User profile & Identity verification status
+│   │   │   ├── property-listing/# Property browsing, creation & details
+│   │   │   └── subscription/    # SaaS plans & subscription checkout
+│   │   ├── services/            # API Service layer (verification, chat, properties)
 │   │   ├── utils/               # Dynamic imageUrl & environment resolution
 │   │   ├── App.tsx
 │   │   └── main.tsx
@@ -174,6 +210,9 @@ DB_NAME=baribhara
 JWT_SECRET=your_jwt_secret_key
 FRONTEND_URL=http://localhost:5173
 GEMINI_API_KEY=your_google_gemini_api_key
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 ```
 
 Import Database Schema into PostgreSQL:
