@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
@@ -9,6 +9,7 @@ import {
   VerificationStatus,
 } from "../../services/verification.service";
 import VerificationBadge from "../../components/VerificationBadge";
+import api from "../../api/axios";
 
 // ─────────────────────────────────────────────────────────────────
 // Status filter tabs
@@ -34,6 +35,114 @@ const statusColors: Record<VerificationStatus, string> = {
   MANUAL_REVIEW: "bg-purple-500/15 border-purple-500/40 text-purple-400",
 };
 
+// suppress unused warning
+void statusColors;
+
+// ─────────────────────────────────────────────────────────────────
+// PDF Viewer — fetches via authenticated backend proxy → blob URL
+// The admin's browser never touches Cloudinary directly.
+// ─────────────────────────────────────────────────────────────────
+const PdfViewer = ({ verificationId }: { verificationId: string }) => {
+  const [blobUrl, setBlobUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const prevBlobUrl = useRef<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    setBlobUrl(null);
+
+    api
+      .get(`/admin/verifications/${verificationId}/document`, {
+        responseType: "blob",
+      })
+      .then((res) => {
+        if (cancelled) return;
+        const blob = new Blob([res.data], { type: "application/pdf" });
+        const url = URL.createObjectURL(blob);
+        prevBlobUrl.current = url;
+        setBlobUrl(url);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setError(err?.response?.data?.message || "Failed to load NID document.");
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+      if (prevBlobUrl.current) {
+        URL.revokeObjectURL(prevBlobUrl.current);
+        prevBlobUrl.current = null;
+      }
+    };
+  }, [verificationId]);
+
+  return (
+    <div className="space-y-3">
+      {/* Section header */}
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+            <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            NID Document PDF
+          </h3>
+          <p className="text-[11px] text-slate-500 mt-0.5">Secure authenticated document</p>
+        </div>
+        {blobUrl && (
+          <button
+            type="button"
+            onClick={() => window.open(blobUrl, "_blank")}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/40 text-cyan-300 transition-colors"
+          >
+            Open in New Tab
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+          </button>
+        )}
+      </div>
+
+      {/* Loading */}
+      {loading && (
+        <div className="w-full h-[450px] rounded-xl bg-slate-950 border border-slate-700/80 flex items-center justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <div className="w-8 h-8 border-2 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin" />
+            <p className="text-xs text-slate-400">Loading document…</p>
+          </div>
+        </div>
+      )}
+
+      {/* Error */}
+      {error && !loading && (
+        <div className="w-full rounded-xl bg-rose-500/10 border border-rose-500/30 p-6 text-center">
+          <p className="text-sm text-rose-400 font-medium">{error}</p>
+          <p className="text-xs text-slate-400 mt-1">
+            The document may have been removed or is unavailable.
+          </p>
+        </div>
+      )}
+
+      {/* PDF iframe */}
+      {blobUrl && !loading && (
+        <div className="w-full rounded-xl overflow-hidden border border-slate-700/80 bg-slate-950 shadow-inner">
+          <iframe
+            src={blobUrl}
+            title="NID Document PDF Preview"
+            className="w-full h-[500px] sm:h-[600px] rounded-lg bg-slate-950"
+          />
+        </div>
+      )}
+    </div>
+  );
+};
+
 // ─────────────────────────────────────────────────────────────────
 // Detail/Review Modal
 // ─────────────────────────────────────────────────────────────────
@@ -47,7 +156,6 @@ interface DetailModalProps {
 const DetailModal = ({ item, onClose, onDecision, processing }: DetailModalProps) => {
   const [reason, setReason] = useState("");
   const [pendingAction, setPendingAction] = useState<"VERIFIED" | "REJECTED" | null>(null);
-  const [showPdfPreview, setShowPdfPreview] = useState(true);
 
   const handleDecision = async (action: "VERIFIED" | "REJECTED") => {
     setPendingAction(action);
@@ -109,12 +217,14 @@ const DetailModal = ({ item, onClose, onDecision, processing }: DetailModalProps
                 </div>
                 <div>
                   <p className="text-[11px] text-slate-500 uppercase tracking-wider">User Email / Phone</p>
-                  <p className="text-white font-medium">{item.email} {item.phone ? `(${item.phone})` : ""}</p>
+                  <p className="text-white font-medium">
+                    {item.email} {item.phone ? `(${item.phone})` : ""}
+                  </p>
                 </div>
               </div>
             </div>
 
-            {/* AI Extraction (if available) */}
+            {/* AI Extraction */}
             <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
               <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
                 <svg className="w-3.5 h-3.5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -171,63 +281,10 @@ const DetailModal = ({ item, onClose, onDecision, processing }: DetailModalProps
             </div>
           )}
 
-          {/* NID Document viewer */}
-          {item.signedDocumentUrl ? (
-            <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50 space-y-3">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div>
-                  <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
-                    <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                    </svg>
-                    NID Document PDF
-                  </h3>
-                  <p className="text-[11px] text-slate-500 mt-0.5">Secure authenticated link (valid 1 hour)</p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowPdfPreview(!showPdfPreview)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-colors"
-                  >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      {showPdfPreview ? (
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
-                      ) : (
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      )}
-                    </svg>
-                    {showPdfPreview ? "Hide Inline View" : "Show Inline View"}
-                  </button>
-                  <a
-                    href={item.signedDocumentUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/40 text-cyan-300 transition-colors"
-                  >
-                    Open in New Tab
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                  </a>
-                </div>
-              </div>
-
-              {showPdfPreview && (
-                <div className="w-full rounded-xl overflow-hidden border border-slate-700/80 bg-slate-950 shadow-inner">
-                  <iframe
-                    src={item.signedDocumentUrl}
-                    title="NID Document PDF Preview"
-                    className="w-full h-[450px] sm:h-[550px] rounded-lg bg-slate-950"
-                  />
-                </div>
-              )}
-            </div>
-          ) : (
-            <div className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/40 text-center text-xs text-slate-400">
-              No NID document attached to this verification.
-            </div>
-          )}
+          {/* NID Document viewer — authenticated backend proxy */}
+          <div className="bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+            <PdfViewer verificationId={item.id} />
+          </div>
 
           {/* Admin decision */}
           {(item.status === "PENDING" || item.status === "MANUAL_REVIEW") && (

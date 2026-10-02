@@ -1,4 +1,8 @@
+import https from "https";
+import http from "http";
 import adminVerificationService from "./adminVerification.service.js";
+import pool from "../../db/dbConnection.js";
+import cloudinary from "../../config/cloudinary.js";
 export class AdminVerificationController {
     /**
      * GET /api/admin/verifications
@@ -104,6 +108,62 @@ export class AdminVerificationController {
                 success: false,
                 message: err.message || "Failed to submit review decision",
             });
+        }
+    }
+    /**
+     * GET /api/admin/verifications/:id/document
+     * Proxies the authenticated Cloudinary PDF to the admin browser so the PDF
+     * can be displayed inline in an <iframe> without exposing Cloudinary credentials.
+     */
+    async streamDocument(req, res) {
+        try {
+            const id = req.params.id;
+            if (!id) {
+                return res.status(400).json({ success: false, message: "Verification ID is required" });
+            }
+            // Look up the document_public_id for this verification record
+            const dbRes = await pool.query(`SELECT document_public_id FROM user_verifications WHERE id = $1`, [id]);
+            if (dbRes.rows.length === 0 || !dbRes.rows[0].document_public_id) {
+                return res.status(404).json({ success: false, message: "No document found for this verification" });
+            }
+            const publicId = dbRes.rows[0].document_public_id;
+            // Generate a short-lived signed URL (60 seconds — enough to proxy, never exposed to client)
+            const expiresAt = Math.floor(Date.now() / 1000) + 60;
+            const cleanPublicId = publicId.replace(/\.pdf$/, "");
+            // Try 'image' first (how Cloudinary v2 stores PDFs uploaded with resource_type:auto)
+            // Fall back to 'raw' if the first attempt fails
+            const tryFetch = (resourceType) => new Promise((resolve) => {
+                const signedUrl = cloudinary.utils.private_download_url(cleanPublicId, "pdf", {
+                    resource_type: resourceType,
+                    type: "authenticated",
+                    expires_at: expiresAt,
+                });
+                const mod = signedUrl.startsWith("https") ? https : http;
+                const chunks = [];
+                const req2 = mod.get(signedUrl, (r) => {
+                    r.on("data", (chunk) => chunks.push(chunk));
+                    r.on("end", () => resolve({ statusCode: r.statusCode ?? 0, headers: r.headers, body: Buffer.concat(chunks) }));
+                });
+                req2.on("error", () => resolve({ statusCode: 0, headers: {}, body: Buffer.alloc(0) }));
+            });
+            let result = await tryFetch("image");
+            if (result.statusCode !== 200) {
+                result = await tryFetch("raw");
+            }
+            if (result.statusCode !== 200 || result.body.length === 0) {
+                console.error(`[streamDocument] Cloudinary fetch failed for ${publicId}, status=${result.statusCode}`);
+                return res.status(502).json({ success: false, message: "Could not retrieve NID document from storage" });
+            }
+            // Stream PDF inline so the browser renders it (not downloads it)
+            res.setHeader("Content-Type", "application/pdf");
+            res.setHeader("Content-Disposition", "inline; filename=\"nid-document.pdf\"");
+            res.setHeader("Content-Length", result.body.length);
+            res.setHeader("Cache-Control", "no-store");
+            return res.end(result.body);
+        }
+        catch (err) {
+            console.error("Error in streamDocument:", err);
+            return res.status(500).json({ success: false, message: err.message || "Failed to stream document" });
         }
     }
 }

@@ -12,6 +12,11 @@ router.use(requireAdmin as any);
 // GET /api/admin/verifications — List submissions (filter by ?status=MANUAL_REVIEW)
 router.get("/", (req, res) => adminVerificationController.getVerifications(req, res));
 
+// GET /api/admin/verifications/:id/document — Stream NID PDF inline (backend proxy)
+router.get("/:id/document", (req, res) =>
+  adminVerificationController.streamDocument(req, res)
+);
+
 // GET /api/admin/verifications/:id — View single submission details
 router.get("/:id", (req, res) =>
   adminVerificationController.getVerificationById(req, res)
@@ -23,3 +28,4 @@ router.patch("/:id", (req, res) =>
 );
 
 export default router;
+
