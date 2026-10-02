@@ -22,7 +22,7 @@ export interface VerificationStatusResponse {
     isVerified: boolean;
   };
   verification: VerificationRecord | null;
-  attempts: {
+  history: {
     id: string;
     status: string;
     rejection_reason?: string;

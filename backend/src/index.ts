@@ -7,6 +7,7 @@ import { Server } from "socket.io";
 import app from "./app.js";
 import pool from "./db/dbConnection.js";
 import { initializeChatSocket } from "./chat/chat.socket.js";
+import { runVerificationMigration } from "./db/verificationMigration.js";
 
 // Load .env from project root for local dev.
 // On Render/production, env vars are injected directly — dotenv is a no-op.
@@ -185,6 +186,9 @@ const initializeApp =
       console.log(
         "DB connected successfully"
       );
+
+      // Auto-migrate verification tables (safe to run repeatedly — uses CREATE IF NOT EXISTS)
+      await runVerificationMigration();
 
       await ensureDefaultUsers();
 

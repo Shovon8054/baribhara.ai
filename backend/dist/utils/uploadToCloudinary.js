@@ -54,7 +54,7 @@ export const getSignedVerificationDocUrl = (publicId, expiresInSeconds = 3600) =
     const expiresAt = Math.floor(Date.now() / 1000) + expiresInSeconds;
     const cleanPublicId = publicId.replace(/\.pdf$/, "");
     return cloudinary.utils.private_download_url(cleanPublicId, "pdf", {
-        resource_type: "image",
+        resource_type: "raw", // PDFs uploaded with resource_type "auto" are stored as "raw"
         type: "authenticated",
         expires_at: expiresAt,
     });
