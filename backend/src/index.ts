@@ -120,29 +120,52 @@ const startServer = (
 
 import bcrypt from "bcryptjs";
 
-const ensureAdminUser = async () => {
+const ensureDefaultUsers = async () => {
   try {
-    const email = "admin@baribhara.ai";
-    const password = "Admin1234";
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const demoAccounts = [
+      {
+        email: "admin@baribhara.ai",
+        password: "Admin1234",
+        full_name: "BashaBhara Admin",
+        phone: "01700000001",
+        role: "ADMIN",
+      },
+      {
+        email: "tenant@bashabhara.com",
+        password: "Tenant1234",
+        full_name: "Saqline (Tenant)",
+        phone: "+8801812345678",
+        role: "TENANT",
+      },
+      {
+        email: "owner@bashabhara.com",
+        password: "Owner1234",
+        full_name: "Shovon (Owner)",
+        phone: "+8801712345678",
+        role: "OWNER",
+      },
+    ];
 
-    const checkRes = await pool.query("SELECT id FROM users WHERE email = $1", [email]);
-    if (checkRes.rows.length === 0) {
-      await pool.query(
-        `INSERT INTO users (email, password, full_name, role, is_verified, is_active)
-         VALUES ($1, $2, 'BashaBhara Admin', 'ADMIN', true, true)`,
-        [email, hashedPassword]
-      );
-      console.log("Admin user admin@baribhara.ai created successfully.");
-    } else {
-      await pool.query(
-        `UPDATE users SET password = $1, role = 'ADMIN', is_verified = true, is_active = true WHERE email = $2`,
-        [hashedPassword, email]
-      );
-      console.log("Admin user admin@baribhara.ai password updated successfully.");
+    for (const acc of demoAccounts) {
+      const hashedPassword = await bcrypt.hash(acc.password, 10);
+      const checkRes = await pool.query("SELECT id FROM users WHERE email = $1", [acc.email]);
+      if (checkRes.rows.length === 0) {
+        await pool.query(
+          `INSERT INTO users (email, password, full_name, phone, role, is_verified, is_active)
+           VALUES ($1, $2, $3, $4, $5, true, true)`,
+          [acc.email, hashedPassword, acc.full_name, acc.phone, acc.role]
+        );
+        console.log(`Demo user ${acc.email} (${acc.role}) created successfully.`);
+      } else {
+        await pool.query(
+          `UPDATE users SET password = $1, role = $2, full_name = $3, is_verified = true, is_active = true WHERE email = $4`,
+          [hashedPassword, acc.role, acc.full_name, acc.email]
+        );
+        console.log(`Demo user ${acc.email} (${acc.role}) credentials verified/updated.`);
+      }
     }
   } catch (err) {
-    console.error("Failed to ensure admin user:", err);
+    console.error("Failed to ensure default demo users:", err);
   }
 };
 
@@ -162,7 +185,7 @@ const initializeApp =
         "DB connected successfully"
       );
 
-      await ensureAdminUser();
+      await ensureDefaultUsers();
 
       startServer(
         BASE_PORT
